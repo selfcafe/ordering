@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
   <title>セルフカフェスタッフ</title>
   <link rel="manifest" href="manifest.json">
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
   <link rel="apple-touch-icon" href="/apple-touch-icon.png">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -480,6 +482,14 @@
 const GAS_URL = 'https://script.google.com/macros/s/AKfycbzoqu607sj-rpYulIiDwnuyGSCTzoblzSqaq37cb5k5KiGsK7sisZew9sSRSBoYBSwo_A/exec';
 const ORDERS_CACHE = {};
 
+const _fbApp = firebase.initializeApp({
+  apiKey: "AIzaSyDkAaY0I5x0N8WPNHgWlgYbfvIA84EwdYw",
+  databaseURL: "https://selfcafe-internal-web-system-default-rtdb.firebaseio.com",
+  projectId: "selfcafe-internal-web-system",
+  appId: "1:369903869101:web:3cfbe7cc9a643d9eb63a24"
+});
+const _fbDb = firebase.database();
+
 async function gasGet(action, params) {
   const q = new URLSearchParams({ action, ...(params||{}) });
   const res = await fetch(GAS_URL + '?' + q);
@@ -543,6 +553,7 @@ async function _syncStoreToDb(storeId, rows) {
   try {
     const dbRows = rows.map(r => _rowToDb(r, storeId));
     await gasPost('saveOrders', { storeId, rows: dbRows });
+    _fbDb.ref('orders_updated').set(Date.now());
   } catch(e) { console.error('GAS sync error:', e); }
 }
 
@@ -614,7 +625,22 @@ function _notifyLostChanged(storeId) {
 }
 
 function _initRealtime() {
-  // GASはリアルタイム非対応のためnoop
+  let first = true;
+  _fbDb.ref('orders_updated').on('value', async () => {
+    if (first) { first = false; return; }
+    try {
+      const orders = await gasGet('getOrders');
+      Object.keys(ORDERS_CACHE).forEach(k => delete ORDERS_CACHE[k]);
+      (orders || []).forEach(r => {
+        if (!ORDERS_CACHE[r.store_id]) ORDERS_CACHE[r.store_id] = [];
+        ORDERS_CACHE[r.store_id].push(_dbToRow(r));
+      });
+      if (document.getElementById('page-admin')?.classList.contains('active')) {
+        renderAdmin();
+        updateBadges();
+      }
+    } catch(e) { console.error('realtime reload error:', e); }
+  });
 }
 
 
