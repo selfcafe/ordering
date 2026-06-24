@@ -488,6 +488,7 @@ async function gasGet(action, params) {
 async function gasPost(action, body) {
   const res = await fetch(GAS_URL, {
     method: 'POST',
+    headers: { 'Content-Type': 'text/plain' },
     body: JSON.stringify({ action, ...body }),
   });
   return res.json();
