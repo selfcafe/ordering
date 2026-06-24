@@ -1,0 +1,12 @@
+{
+  "name": "セルフカフェ社内ポータル",
+  "short_name": "セルフカフェ社内ポータル",
+  "start_url": "/internal-web-system/",
+  "display": "standalone",
+  "background_color": "#141414",
+  "theme_color": "#22703d",
+  "icons": [
+    { "src": "/internal-web-system/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/internal-web-system/icon-512.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}

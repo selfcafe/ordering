@@ -1,0 +1,212 @@
+// ============================================================
+// セルフカフェ社内ポータル - Google Apps Script バックエンド
+// ============================================================
+// 【設定】デプロイ前に以下2行を入力してください
+const SHEET_ID        = '';  // GoogleスプレッドシートのID
+const IMAGE_FOLDER_ID = '';  // 画像保存用DriveフォルダのID
+
+const SHEET_ORDERS   = 'orders';
+const SHEET_SETTINGS = 'app_settings';
+const SHEET_LOST     = 'lost_items';
+
+const ORDER_COLS = [
+  'id','store_id','group_id','product','label','qty','unit',
+  'case_unit','note','locked','is_new','request_date','order_date',
+  'delivery_date','created_at','denied','image_url'
+];
+const LOST_COLS = ['id','store_id','found_date','note','image_url','added_at'];
+
+// ----------------------------------------------------------------
+// エントリーポイント
+// ----------------------------------------------------------------
+
+function doGet(e) {
+  try {
+    const a = e.parameter.action;
+    let result;
+    if      (a === 'getOrders')    result = getOrders();
+    else if (a === 'getSettings')  result = getSettings();
+    else if (a === 'getLostItems') result = getLostItems(e.parameter.month, e.parameter.storeId);
+    else result = { error: 'Unknown action: ' + a };
+    return json(result);
+  } catch(err) {
+    return json({ error: err.message });
+  }
+}
+
+function doPost(e) {
+  const lock = LockService.getScriptLock();
+  lock.waitLock(30000);
+  try {
+    const b = JSON.parse(e.postData.contents);
+    let result;
+    if      (b.action === 'saveOrders')     result = saveOrders(b.storeId, b.rows);
+    else if (b.action === 'saveSetting')    result = saveSetting(b.key, b.value);
+    else if (b.action === 'saveLostItem')   result = saveLostItem(b.item, b.imageBase64, b.imageMime);
+    else if (b.action === 'deleteLostItem') result = deleteLostItem(b.id, b.imageUrl);
+    else result = { error: 'Unknown action: ' + b.action };
+    return json(result);
+  } catch(err) {
+    return json({ error: err.message });
+  } finally {
+    lock.releaseLock();
+  }
+}
+
+function json(data) {
+  return ContentService.createTextOutput(JSON.stringify(data))
+    .setMimeType(ContentService.MimeType.JSON);
+}
+
+// ----------------------------------------------------------------
+// シートヘルパー
+// ----------------------------------------------------------------
+
+function getSheet(name) {
+  const ss = SpreadsheetApp.openById(SHEET_ID);
+  return ss.getSheetByName(name) || ss.insertSheet(name);
+}
+
+function ensureHeaders(sheet, cols) {
+  if (sheet.getLastRow() === 0) sheet.appendRow(cols);
+}
+
+function sheetRows(sheet, cols) {
+  if (sheet.getLastRow() <= 1) return [];
+  const data = sheet.getDataRange().getValues();
+  const hdrs = data[0].map(String);
+  return data.slice(1).map(row => {
+    const obj = {};
+    cols.forEach(c => { const i = hdrs.indexOf(c); obj[c] = i >= 0 ? row[i] : null; });
+    return obj;
+  });
+}
+
+// ----------------------------------------------------------------
+// orders
+// ----------------------------------------------------------------
+
+function getOrders() {
+  return sheetRows(getSheet(SHEET_ORDERS), ORDER_COLS).map(r => ({
+    id:            r.id,
+    store_id:      r.store_id,
+    group_id:      r.group_id      || null,
+    product:       r.product       || null,
+    label:         r.label         || null,
+    qty:           (r.qty !== '' && r.qty !== null) ? Number(r.qty) : null,
+    unit:          r.unit          || null,
+    case_unit:     r.case_unit     || null,
+    note:          r.note          || null,
+    locked:        r.locked === true || r.locked === 'TRUE',
+    is_new:        r.is_new  === true || r.is_new  === 'TRUE',
+    request_date:  r.request_date  || null,
+    order_date:    r.order_date    || null,
+    delivery_date: r.delivery_date || null,
+    created_at:    r.created_at    || null,
+    denied:        r.denied === true || r.denied === 'TRUE',
+    image_url:     r.image_url     || null,
+  }));
+}
+
+function saveOrders(storeId, rows) {
+  const sheet = getSheet(SHEET_ORDERS);
+  ensureHeaders(sheet, ORDER_COLS);
+
+  if (sheet.getLastRow() > 1) {
+    const data   = sheet.getDataRange().getValues();
+    const sidIdx = data[0].indexOf('store_id');
+    const toDel  = [];
+    for (let i = 1; i < data.length; i++) {
+      if (String(data[i][sidIdx]) === String(storeId)) toDel.push(i + 1);
+    }
+    for (let i = toDel.length - 1; i >= 0; i--) sheet.deleteRow(toDel[i]);
+  }
+
+  if (rows.length > 0) {
+    const newRows = rows.map(r =>
+      ORDER_COLS.map(c => (r[c] === undefined || r[c] === null) ? '' : r[c])
+    );
+    sheet.getRange(sheet.getLastRow() + 1, 1, newRows.length, ORDER_COLS.length).setValues(newRows);
+  }
+  return { ok: true };
+}
+
+// ----------------------------------------------------------------
+// app_settings
+// ----------------------------------------------------------------
+
+function getSettings() {
+  const sheet = getSheet(SHEET_SETTINGS);
+  if (sheet.getLastRow() <= 1) return [];
+  const data = sheet.getDataRange().getValues();
+  const ki = data[0].indexOf('key'), vi = data[0].indexOf('value');
+  return data.slice(1).map(r => ({ key: r[ki], value: r[vi] }));
+}
+
+function saveSetting(key, value) {
+  const sheet = getSheet(SHEET_SETTINGS);
+  ensureHeaders(sheet, ['key', 'value']);
+  const data = sheet.getDataRange().getValues();
+  const ki = data[0].indexOf('key'), vi = data[0].indexOf('value');
+  for (let i = 1; i < data.length; i++) {
+    if (String(data[i][ki]) === String(key)) {
+      sheet.getRange(i + 1, vi + 1).setValue(value);
+      return { ok: true };
+    }
+  }
+  sheet.appendRow([key, value]);
+  return { ok: true };
+}
+
+// ----------------------------------------------------------------
+// lost_items
+// ----------------------------------------------------------------
+
+function getLostItems(month, storeId) {
+  let rows = sheetRows(getSheet(SHEET_LOST), LOST_COLS);
+  if (month)   rows = rows.filter(r => r.found_date && String(r.found_date).startsWith(month));
+  if (storeId) rows = rows.filter(r => String(r.store_id) === String(storeId));
+  return rows;
+}
+
+function saveLostItem(item, imageBase64, imageMime) {
+  const sheet = getSheet(SHEET_LOST);
+  ensureHeaders(sheet, LOST_COLS);
+  let imageUrl = item.image_url || null;
+  if (imageBase64 && IMAGE_FOLDER_ID) {
+    imageUrl = saveImageToDrive(imageBase64, imageMime || 'image/jpeg', item.id);
+  }
+  sheet.appendRow(LOST_COLS.map(c =>
+    c === 'image_url' ? (imageUrl || '') : (item[c] === undefined || item[c] === null ? '' : item[c])
+  ));
+  return { ok: true, image_url: imageUrl };
+}
+
+function deleteLostItem(id, imageUrl) {
+  const sheet = getSheet(SHEET_LOST);
+  if (sheet.getLastRow() <= 1) return { ok: true };
+  const data  = sheet.getDataRange().getValues();
+  const idIdx = data[0].indexOf('id');
+  for (let i = 1; i < data.length; i++) {
+    if (String(data[i][idIdx]) === String(id)) { sheet.deleteRow(i + 1); break; }
+  }
+  if (imageUrl && imageUrl.includes('drive.google.com')) {
+    try {
+      const m = imageUrl.match(/[?&]id=([^&]+)/);
+      if (m) DriveApp.getFileById(m[1]).setTrashed(true);
+    } catch(e) {}
+  }
+  return { ok: true };
+}
+
+// ----------------------------------------------------------------
+// 画像 (Drive)
+// ----------------------------------------------------------------
+
+function saveImageToDrive(base64, mimeType, filename) {
+  const folder = DriveApp.getFolderById(IMAGE_FOLDER_ID);
+  const blob   = Utilities.newBlob(Utilities.base64Decode(base64), mimeType, filename + '.jpg');
+  const file   = folder.createFile(blob);
+  file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
+  return 'https://drive.google.com/uc?export=view&id=' + file.getId();
+}

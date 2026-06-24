@@ -1,0 +1,3135 @@
+﻿<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <title>セルフカフェスタッフ</title>
+  <link rel="manifest" href="/manifest.json">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="セルフカフェ">
+  <meta name="theme-color" content="#141414">
+  <!-- iOS スプラッシュスクリーン -->
+  <link rel="apple-touch-startup-image" href="/splash-1290x2796.png" media="(device-width:430px) and (device-height:932px) and (-webkit-device-pixel-ratio:3)">
+  <link rel="apple-touch-startup-image" href="/splash-1170x2532.png" media="(device-width:390px) and (device-height:844px) and (-webkit-device-pixel-ratio:3)">
+  <link rel="apple-touch-startup-image" href="/splash-1170x2532.png" media="(device-width:393px) and (device-height:852px) and (-webkit-device-pixel-ratio:3)">
+  <link rel="apple-touch-startup-image" href="/splash-750x1334.png"  media="(device-width:375px) and (device-height:667px) and (-webkit-device-pixel-ratio:2)">
+  <link rel="apple-touch-startup-image" href="/splash-1536x2048.png" media="(device-width:768px) and (device-height:1024px) and (-webkit-device-pixel-ratio:2)">
+  <link rel="apple-touch-startup-image" href="/splash-1290x2796.png">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI','Meiryo',sans-serif; background:#fafaf5; color:#333; min-height:100vh; }
+
+    .page { display:none; padding:16px; min-height:100vh; }
+    .page.active { display:block; }
+
+    .page-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; flex-wrap:wrap; gap:8px; }
+    .page-header h1 { font-size:26px; color:#22703d; font-weight:700; }
+
+    .link-btn { display:inline-flex; align-items:center; gap:6px; background:#22703d; color:white; border:none; border-radius:8px; padding:9px 16px; font-size:14px; font-weight:600; cursor:pointer; text-decoration:none; font-family:inherit; white-space:nowrap; }
+    .link-btn:hover { background:#1a5c30; }
+    .link-btn .badge-inline { background:#ef4444; color:white; font-size:10px; font-weight:bold; border-radius:99px; padding:1px 6px; min-width:16px; text-align:center; }
+
+    .sub-nav-wrap { background:#c2d63a; padding:8px 10px 0; display:flex; gap:4px; margin-bottom:0; }
+    .sub-nav-wrap.last { margin-bottom:16px; }
+    .sub-nav-wrap.level2 { background:#3d8154; padding:6px 10px 0; }
+    .sub-nav-wrap.level2 .sub-tab { font-size:12px; padding:7px 8px; color:#fff; background:#22703d; }
+    .sub-nav-wrap.level2 .sub-tab:hover { background:#1a5c30; color:#fff; }
+    .sub-nav-wrap.level2 .sub-tab.active { background:#fff; color:#22703d; }
+
+    .sub-tab { position:relative; flex:1; padding:9px 8px; border:2px solid transparent; background:rgba(255,255,255,.18); color:#2a3a04; font-size:13px; font-family:inherit; cursor:pointer; border-radius:6px 6px 0 0; font-weight:600; text-align:center; }
+    .sub-tab:hover { background:rgba(255,255,255,.42); }
+    .sub-tab.active { background:#ffffff; color:#22703d; border:2px solid #ffe44c; border-bottom:2px solid #ffffff; }
+    .tab-badge { position:absolute; top:3px; right:5px; background:#ef4444; color:white; font-size:10px; font-weight:bold; border-radius:99px; padding:1px 5px; min-width:16px; text-align:center; line-height:15px; }
+
+    .store-nav-search { position:relative; display:flex; align-items:center; background:rgba(255,255,255,.88); border-radius:6px 6px 0 0; padding:0 10px; min-width:150px; box-shadow:inset 0 0 0 1px rgba(255,255,255,.6); }
+    .store-nav-search input { border:none; background:transparent; color:#22703d; font-size:13px; font-family:inherit; outline:none; padding:9px 6px; width:100%; font-weight:600; }
+    .store-nav-search input::placeholder { color:#333; font-weight:400; opacity:.8; }
+    .store-nav-search .s-icon { color:#22703d; font-size:13px; flex-shrink:0; }
+    .active-store-label { padding:9px 16px; background:white; color:#22703d; font-size:13px; font-weight:700; border-radius:6px 6px 0 0; white-space:nowrap; display:flex; align-items:center; }
+    .store-search-dd { display:none; position:absolute; top:100%; left:0; background:white; border:1px solid #22703d; border-radius:0 0 8px 8px; box-shadow:0 6px 16px rgba(0,0,0,.15); min-width:200px; z-index:300; max-height:220px; overflow-y:auto; }
+    .store-search-dd.open { display:block; }
+    .store-dd-item { padding:10px 14px; font-size:14px; cursor:pointer; color:#333; }
+    .store-dd-item:hover { background:#fffde0; }
+    .store-dd-item.no-result { color:#aaa; cursor:default; }
+
+    .toolbar { display:flex; gap:10px; margin-bottom:14px; align-items:center; }
+    button { border:none; border-radius:6px; cursor:pointer; font-family:inherit; }
+    .btn-add       { background:#22703d; color:white; padding:10px 20px; font-size:15px; font-weight:600; }
+    .btn-done      { background:#22703d; color:white; padding:8px 12px; font-size:13px; font-weight:700; }
+    .btn-del       { background:#ef4444; color:white; padding:8px 12px; font-size:13px; }
+    .btn-confirm   { background:#ffe44c; color:#22703d; padding:7px 11px; font-size:12px; font-weight:700; }
+    .btn-unconfirm { background:#6b7280; color:white; padding:7px 11px; font-size:12px; }
+    .btn-deny      { background:#ef4444; color:white; padding:7px 11px; font-size:12px; font-weight:700; }
+    .btn-withdraw  { background:#dc2626; color:white; padding:6px 14px; font-size:13px; font-weight:700; border-radius:6px; border:none; cursor:pointer; font-family:inherit; }
+    .action-wrap   { display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+    .btn-history   { background:#f3f4f6; color:#374151; padding:10px 16px; font-size:14px; font-weight:600; border:1.5px solid #d1d5db; }
+    .btn-history.active { background:#22703d; color:white; border-color:#22703d; }
+    .history-badge { display:inline-block; background:#22703d; color:white; border-radius:10px; font-size:11px; padding:1px 7px; margin-left:5px; }
+    .btn-history.active .history-badge { background:rgba(255,255,255,0.3); }
+    #order-history-panel { margin-top:16px; }
+    #order-history-panel .history-title { font-weight:700; font-size:14px; color:#374151; margin-bottom:10px; padding-bottom:8px; border-bottom:2px solid #e5e7eb; }
+    tr.denied-row td { background:#fff0f0; }
+
+    .summary { font-size:13px; color:#666; margin-bottom:12px; }
+
+    .table-wrap { overflow-x:auto; -webkit-overflow-scrolling:touch; }
+    table { width:100%; border-collapse:collapse; background:white; border-radius:10px; overflow:hidden; box-shadow:0 2px 8px rgba(34,112,61,.1); }
+    thead tr { background:#c2d63a; color:#1a2a05; }
+    th { padding:11px 10px; text-align:left; font-size:13px; font-weight:600; white-space:nowrap; }
+    td { padding:9px 10px; border-bottom:1px solid #eee; font-size:13px; vertical-align:middle; }
+    tr:last-child td { border-bottom:none; }
+
+    tr.new-req td { background:#fffde0; }
+    tr.new-req td:first-child { border-left:4px solid #ffe44c; }
+    tr.hist-row td { color:#888; background:#f5fdf8; }
+    tr.locked-row td { background:#f5fdf8; }
+    tr.locked-row.group-first td { border-top:2px solid #22703d; }
+    td.c-req, td.c-order, td.c-delivery, td.c-product, td.c-qty, td.c-note { background:#f5fdf8; }
+
+    .btn-request { background:#22703d; color:white; padding:9px 18px; font-size:14px; font-weight:600; border-radius:6px; }
+    .btn-request:hover { background:#22703d; }
+    .btn-cancel-lock { background:#6b7280; color:white; padding:6px 12px; font-size:12px; border-radius:6px; }
+    .locked-status { color:#22703d; font-size:12px; font-weight:700; display:inline-flex; align-items:center; gap:4px; }
+
+    /* グループ区切り */
+    tr.group-sep td { height:6px; background:#f5f5ea; padding:0; border:none; }
+    tr.group-first td { border-top:2px solid #d1d5db; }
+    table tr:first-child.group-first td { border-top:none; }
+
+    .new-label { display:inline-block; background:#ffe44c; color:#22703d; font-size:11px; font-weight:bold; border-radius:4px; padding:1px 5px; margin-right:4px; }
+
+    .display-cell { font-size:13px; color:#444; min-height:32px; display:block; width:100%; }
+    .display-cell.empty { color:#bbb; font-style:italic; }
+    #history-table tr.locked-row.group-first td { border-top:none; }
+
+    input[type="date"]   { border:1px solid #ddd; border-radius:5px; padding:6px 7px; font-size:13px; font-family:inherit; width:100%; background:transparent; min-height:38px; }
+    input[type="number"] { border:1px solid #ddd; border-radius:5px; padding:6px 7px; font-size:13px; font-family:inherit; width:70px; background:transparent; text-align:right; min-height:38px; }
+    textarea { border:1px solid #ddd; border-radius:5px; padding:6px 7px; font-size:13px; font-family:inherit; width:100%; min-height:56px; resize:none; overflow-y:hidden; background:transparent; line-height:1.4; }
+    input:focus, textarea:focus { outline:none; border-color:#22703d; }
+
+    .c-order    input[type="date"] { background:#d4edde; color:#1a5c30; font-weight:600; border-color:#86c9a3; }
+    .c-delivery input[type="date"] { background:#fee2e2; color:#dc2626; font-weight:600; border-color:#fca5a5; }
+
+    .qty-wrap  { display:flex; align-items:center; gap:4px; }
+    .qty-btn { width:28px; height:28px; border-radius:50%; border:1px solid #ccc; background:#f5f5f5; font-size:15px; line-height:1; cursor:pointer; flex-shrink:0; display:flex; align-items:center; justify-content:center; padding:0; }
+    .qty-btn:active { background:#d0d0d0; }
+    .qty-wrap input[type=number] { width:46px; text-align:center; }
+    .unit-label { font-size:12px; color:#666; white-space:nowrap; }
+
+    .c-req      { width:108px; } .c-order { width:108px; } .c-delivery { width:118px; }
+    .c-product  { min-width:160px; } .c-qty { width:150px; }
+    .c-note     { min-width:120px; } .c-store { width:105px; }
+    .c-action   { width:115px; text-align:center; white-space:nowrap; }
+    td.c-action { text-align:center; }
+    .empty-msg  { text-align:center; padding:32px; color:#aaa; font-size:14px; }
+
+    /* 商品検索 */
+    .prod-wrap { position:relative; }
+    .prod-input { border:1px solid #ddd; border-radius:5px; padding:6px 7px; font-size:13px; font-family:inherit; width:100%; background:white; cursor:pointer; min-height:38px; line-height:1.5; white-space:normal; word-break:break-all; display:flex; align-items:center; -webkit-user-select:none; user-select:none; }
+    .prod-input:focus { outline:none; border-color:#22703d; }
+    .prod-placeholder { color:#aaa; }
+    .prod-dropdown { display:none; position:fixed; z-index:500; background:white; border:1px solid #22703d; border-radius:8px; box-shadow:0 6px 20px rgba(0,0,0,.2); width:780px; max-width:calc(100vw - 16px); max-height:300px; overflow-y:auto; }
+    .prod-dropdown.open { display:block; }
+    .prod-search { width:100%; border:none; border-bottom:1px solid #eee; padding:10px 12px; font-size:14px; font-family:inherit; border-radius:8px 8px 0 0; outline:none; min-height:44px; }
+    .prod-option { padding:11px 14px; font-size:14px; cursor:pointer; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .prod-option:active, .prod-option.focused { background:#fffde0; }
+    .prod-option.no-result { color:#aaa; cursor:default; }
+    .prod-option.prod-in-use { color:#aaa; cursor:not-allowed; background:#f5f5f5; }
+    .prod-group-header { padding:5px 12px 4px; font-size:11px; font-weight:700; color:#22703d; background:#edf2d4; letter-spacing:.5px; border-top:1px solid #aabf28; }
+    .prod-group-header:first-child { border-top:none; }
+
+    .note-box { background:#fffde0; border-left:4px solid #ffe44c; border-radius:0 6px 6px 0; padding:10px 14px; font-size:13px; color:#5a4200; margin-bottom:14px; line-height:1.6; }
+
+    /* 全体管理ハンバーガーメニュー */
+    .admin-menu-wrap { position:relative; }
+    .admin-menu-btn { background:#1a5c30; color:white; border:none; border-radius:10px; padding:10px 16px; font-size:24px; line-height:1; cursor:pointer; display:flex; align-items:center; gap:6px; }
+    .admin-menu-btn:hover { background:#154d27; }
+    .admin-menu-btn .menu-label { font-size:12px; font-weight:600; font-family:inherit; letter-spacing:.3px; }
+    .admin-settings-btn { background:#1a5c30; color:white; border:none; border-radius:10px; padding:10px 14px; font-size:20px; line-height:1; cursor:pointer; display:flex; align-items:center; gap:6px; }
+    .admin-settings-btn:hover { background:#154d27; }
+    .admin-settings-btn.active { background:#154d27; outline:2px solid #c2d63a; outline-offset:1px; }
+    .admin-settings-btn .menu-label { font-size:12px; font-weight:600; font-family:inherit; letter-spacing:.3px; }
+    .admin-menu-dd { display:none; position:absolute; top:calc(100% + 6px); left:0; background:white; border:1px solid #ddd; border-radius:10px; box-shadow:0 6px 20px rgba(0,0,0,.18); min-width:170px; z-index:400; overflow:hidden; }
+    .admin-menu-dd.open { display:block; }
+    .admin-menu-section { padding:7px 14px 3px; font-size:11px; font-weight:700; color:#999; letter-spacing:.5px; }
+    .admin-menu-item { padding:10px 16px; font-size:14px; cursor:pointer; color:#333; display:flex; align-items:center; justify-content:space-between; gap:8px; }
+    .admin-menu-item:hover { background:#fffde0; color:#22703d; }
+    .admin-menu-item.active { color:#22703d; font-weight:700; }
+    .admin-menu-item.active::after { content:'✓'; font-size:13px; }
+    .admin-menu-divider { height:1px; background:#eee; margin:4px 0; }
+    .menu-badge { background:#ef4444; color:white; font-size:10px; font-weight:bold; border-radius:99px; padding:1px 6px; min-width:16px; text-align:center; }
+
+    .pagination { display:flex; align-items:center; justify-content:center; gap:6px; margin-top:14px; flex-wrap:wrap; }
+    .page-btn { border:1px solid #ddd; background:white; color:#333; padding:6px 12px; font-size:13px; border-radius:6px; cursor:pointer; font-family:inherit; min-width:36px; text-align:center; }
+    .page-btn:hover { background:#fffde0; border-color:#22703d; color:#22703d; }
+    .page-btn.active { background:#22703d; color:white; border-color:#22703d; cursor:default; }
+    .page-btn:disabled { opacity:.4; cursor:default; }
+    .page-info { font-size:13px; color:#666; padding:0 4px; }
+
+    /* サイトログイン画面 */
+    .site-lock { position:fixed; inset:0; background-color:#edecd8; background-image:repeating-linear-gradient(45deg,rgba(255,255,255,.18) 0px,rgba(255,255,255,.18) 1px,transparent 1px,transparent 6px),repeating-linear-gradient(-45deg,rgba(200,195,160,.12) 0px,rgba(200,195,160,.12) 1px,transparent 1px,transparent 6px); z-index:2000; display:flex; align-items:center; justify-content:center; }
+    .site-lock.hidden { display:none; }
+    .site-lock-box { background:rgba(255,255,255,.92); border-radius:20px; padding:40px 36px; width:min(380px,90vw); text-align:center; box-shadow:0 8px 32px rgba(34,112,61,.12); border:1px solid #d8d6be; }
+    .site-lock-logo { font-size:48px; margin-bottom:12px; }
+    .site-lock-box h2 { font-size:20px; color:#22703d; margin-bottom:6px; font-weight:700; }
+    .site-lock-box p  { font-size:13px; color:#888; margin-bottom:20px; }
+    .site-lock-box .pin-input { font-size:16px; letter-spacing:2px; }
+
+    /* 設定画面カード */
+    .settings-card { background:#fffffe; border-radius:10px; padding:20px 16px; box-shadow:0 2px 8px rgba(34,112,61,.08); margin-bottom:14px; border:1px solid #e0ede5; }
+    .settings-card-title { font-weight:700; font-size:14px; color:#22703d; margin-bottom:14px; }
+    .settings-accordion-hdr { display:flex; justify-content:space-between; align-items:center; cursor:pointer; font-weight:700; font-size:14px; color:#22703d; user-select:none; }
+    .settings-accordion-hdr:hover { color:#22703d; }
+    .settings-accordion-body { margin-top:14px; overflow-x:auto; }
+    .settings-tbl { width:100%; border-collapse:collapse; font-size:13px; }
+    .settings-tbl th { padding:8px 10px; background:#c2d63a; color:#1a2a05; text-align:left; font-size:12px; white-space:nowrap; font-weight:700; }
+    .settings-tbl td { padding:7px 10px; border-bottom:1px solid #eee; vertical-align:middle; }
+    .settings-tbl tr:last-child td { border-bottom:none; }
+    .settings-vendor-hdr td { background:#edf2d4; font-weight:700; font-size:11px; color:#22703d; padding:5px 10px; border-top:2px solid #aabf28; }
+    .settings-vendor-hdr:hover td { background:#dce9b0; }
+    .drag-handle { cursor:grab; text-align:center; color:#9ca3af; font-size:16px; padding:4px 8px !important; user-select:none; }
+    .drag-handle:active { cursor:grabbing; }
+    tr.drag-over td { border-top:2px solid #22703d; }
+    tr.dragging { opacity:0.4; }
+
+    /* ロック画面 */
+    .lock-overlay { display:none; position:fixed; inset:0; background:rgba(15,23,42,.7); z-index:1000; align-items:center; justify-content:center; }
+    .lock-overlay.show { display:flex; }
+    .lock-box { background:white; border-radius:16px; padding:36px 32px; width:min(360px,90vw); box-shadow:0 20px 60px rgba(0,0,0,.3); text-align:center; }
+    .lock-box h2 { font-size:20px; color:#22703d; margin-bottom:6px; }
+    .lock-box p  { font-size:13px; color:#888; margin-bottom:20px; }
+    .pin-input { width:100%; border:2px solid #ddd; border-radius:10px; padding:14px; font-size:28px; text-align:center; letter-spacing:8px; font-family:monospace; outline:none; transition:border-color .2s; }
+    .pin-input:focus { border-color:#22703d; }
+    .pin-error { color:#ef4444; font-size:13px; margin-top:8px; min-height:20px; }
+    .btn-pin-submit { width:100%; margin-top:16px; background:#22703d; color:white; padding:13px; font-size:15px; font-weight:700; border-radius:10px; border:none; cursor:pointer; font-family:inherit; }
+    .btn-pin-submit:hover { background:#1a5c30; }
+
+    /* ===== 時間帯メッセージ ===== */
+    #time-msg-bar { display:none; background:linear-gradient(135deg,#fffde0 0%,#f0f7e8 100%); border-radius:14px; padding:14px 24px; text-align:center; font-size:15px; color:#333; font-weight:500; box-shadow:0 3px 12px rgba(0,0,0,.09); letter-spacing:.3px; margin-bottom:12px; border:1.5px solid #e8e4c0; }
+    #admin-time-msg-bar { display:none; background:linear-gradient(135deg,#fffde0 0%,#f0f7e8 100%); border-radius:14px; padding:14px 24px; text-align:center; font-size:15px; color:#333; font-weight:500; box-shadow:0 3px 12px rgba(0,0,0,.09); letter-spacing:.3px; margin-bottom:12px; border:1.5px solid #e8e4c0; }
+
+    .sp-only { display:none; }
+    @media (max-width:639px) {
+      .sp-only { display:inline; }
+      .page { padding:10px; }
+      .page-header h1 { font-size:22px; }
+      .link-btn { padding:8px 12px; font-size:13px; }
+      table.card-mode { display:block; box-shadow:none; background:transparent; border-radius:0; }
+      table.card-mode thead { display:none; }
+      table.card-mode tbody { display:flex; flex-direction:column; gap:10px; }
+      table.card-mode tr { display:block; background:white; border-radius:10px; box-shadow:0 1px 5px rgba(0,0,0,.1); padding:12px 14px; border-bottom:none !important; border-top:none !important; }
+      table.card-mode tr.locked-row { background:#f5fdf8; border:2px solid #ffe44c; }
+      table.card-mode tr.new-req { border-left:4px solid #ffe44c; }
+      table.card-mode tr.group-sep { display:block; height:12px; background:transparent; padding:0; box-shadow:none; border:none; }
+      table.card-mode td { display:block; padding:5px 0; border:none; font-size:14px; }
+      table.card-mode td::before { content:attr(data-label); display:block; font-size:11px; color:#888; font-weight:600; letter-spacing:.4px; margin-bottom:3px; }
+      table.card-mode td.c-action { display:flex; gap:8px; margin-top:8px; padding-top:10px; border-top:1px solid #ddd !important; text-align:left; }
+      table.card-mode td.c-action::before { display:none; }
+      .btn-done, .btn-del, .btn-withdraw { flex:1; padding:10px 8px; font-size:14px; width:100%; }
+      table.card-mode .locked-status { font-size:15px; }
+      table.card-mode .action-wrap { flex-direction:column; align-items:stretch; width:100%; }
+      .table-wrap { border-radius:10px; }
+      table.card-mode td.c-note textarea { min-height:72px; }
+      table.card-mode td.c-req { width:auto; }
+      input[type="date"], input[type="number"], .prod-input, textarea { font-size:16px !important; }
+      input[type="number"] { width:80px; }
+      /* 商品設定テーブル モバイルグリッド */
+      .settings-tbl { display:block; }
+      .settings-tbl thead { display:none; }
+      .settings-tbl tbody { display:block; }
+      .settings-tbl tr.settings-vendor-hdr { display:block; }
+      .settings-tbl tr.settings-vendor-hdr td { display:block; }
+      .settings-tbl tr:not(.settings-vendor-hdr) {
+        display:grid;
+        grid-template-columns:28px 1fr auto;
+        grid-template-areas:
+          "dh nm del"
+          "dh ut pr"
+          "dh cs cs";
+        column-gap:8px; row-gap:6px;
+        padding:10px 8px; border-bottom:1px solid #e5e7eb !important;
+      }
+      .settings-tbl tr:not(.settings-vendor-hdr) td { border:none !important; padding:0 !important; min-width:0; }
+      .settings-tbl td.drag-handle    { grid-area:dh; align-self:center; }
+      .settings-tbl tr:not(.settings-vendor-hdr) td:nth-child(2) { grid-area:nm; }
+      .settings-tbl tr:not(.settings-vendor-hdr) td:nth-child(3) { grid-area:ut; }
+      .settings-tbl tr:not(.settings-vendor-hdr) td:nth-child(4) { grid-area:pr; }
+      .settings-tbl tr:not(.settings-vendor-hdr) td:nth-child(5) { grid-area:cs; }
+      .settings-tbl tr:not(.settings-vendor-hdr) td:nth-child(6) { grid-area:del; align-self:start; }
+      .settings-tbl td[data-label]::before { content:attr(data-label); display:block; font-size:10px; color:#888; font-weight:600; margin-bottom:2px; }
+      .settings-tbl tr:not(.settings-vendor-hdr) input { width:100% !important; box-sizing:border-box; max-width:none !important; }
+    }
+
+    /* パートナーポータル タブ */
+    .partner-tab-bar { display:flex; gap:4px; margin-bottom:16px; background:#f0f7e8; border-radius:10px; padding:6px; }
+    .partner-tab { flex:1; padding:10px 6px; background:transparent; color:#555; font-size:13px; font-weight:600; border-radius:8px; cursor:pointer; font-family:inherit; transition:background .2s,color .2s; border:none; text-align:center; }
+    .partner-tab:hover { background:rgba(34,112,61,.12); color:#22703d; }
+    .partner-tab.active { background:#22703d; color:white; }
+    .partner-tab-content { display:none; }
+    .partner-tab-content.active { display:block; }
+    .partner-coming-soon { padding:60px 20px; text-align:center; color:#aaa; }
+    .partner-coming-soon .soon-icon { font-size:42px; margin-bottom:12px; }
+    .partner-coming-soon .soon-label { font-size:15px; font-weight:600; }
+
+    /* 店舗別商品設定 */
+    .store-prod-cfg-wrap { display:flex; gap:10px; flex-wrap:wrap; align-items:flex-start; }
+    .store-prod-cfg-store-sel { min-width:180px; border:1px solid #ddd; border-radius:6px; padding:7px 10px; font-size:13px; font-family:inherit; }
+    .store-prod-cfg-list { margin-top:10px; }
+    .store-prod-vendor-hdr { font-size:11px; font-weight:700; color:#22703d; background:#edf2d4; padding:3px 8px; margin-top:8px; margin-bottom:4px; border-radius:4px; }
+    .store-prod-vendor-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:2px 12px; margin-bottom:10px; }
+    @media(max-width:639px) { .store-prod-vendor-grid { grid-template-columns:1fr; } }
+    .store-prod-cfg-list label { display:flex; gap:6px; align-items:center; font-size:13px; padding:3px 0; cursor:pointer; }
+    .store-prod-cfg-list input[type=checkbox] { width:15px; height:15px; accent-color:#22703d; flex-shrink:0; }
+  </style>
+</head>
+<body>
+
+<!-- 画像拡大オーバーレイ -->
+<div id="lost-img-overlay" onclick="closeLostImage()"
+  style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:3000;align-items:center;justify-content:center;cursor:zoom-out">
+  <img id="lost-img-overlay-img" style="max-width:92vw;max-height:92vh;border-radius:8px;object-fit:contain">
+</div>
+
+<!-- サイトログイン画面 -->
+<div class="site-lock" id="site-lock">
+  <div class="site-lock-box">
+    <h2>セルフカフェ社内ポータル</h2>
+    <p>パスワードを入力してください</p>
+    <div style="position:relative">
+      <input class="pin-input" id="site-pw-input" type="password" placeholder="パスワード"
+        onkeydown="if(event.key==='Enter')submitSiteLogin()" style="padding-right:52px">
+      <button type="button" tabindex="-1"
+        style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;padding:4px;color:#aaa;font-size:22px;line-height:1;user-select:none"
+        onmousedown="showPwField('site-pw-input',event)" onmouseup="hidePwField('site-pw-input')" onmouseleave="hidePwField('site-pw-input')"
+        ontouchstart="showPwField('site-pw-input',event)" ontouchend="hidePwField('site-pw-input')">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+      </button>
+    </div>
+    <div class="pin-error" id="site-pw-error"></div>
+    <button class="btn-pin-submit" onclick="submitSiteLogin()">ログイン</button>
+  </div>
+</div>
+
+<!-- 管理者ロック画面 -->
+<div class="lock-overlay" id="lock-overlay">
+  <div class="lock-box">
+    <h2>管理者認証</h2>
+    <p>全体管理にアクセスするにはPINを入力してください</p>
+    <input class="pin-input" id="pin-input" type="password" inputmode="numeric" maxlength="8"
+      placeholder="••••" onkeydown="if(event.key==='Enter')submitPin()">
+    <div class="pin-error" id="pin-error"></div>
+    <button class="btn-pin-submit" onclick="submitPin()">ログイン</button>
+  </div>
+</div>
+
+<!-- 店舗ページ -->
+<div id="page-store" class="page">
+  <div class="page-header" style="flex-direction:column;align-items:stretch;gap:4px">
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <h1>パートナーポータル</h1>
+      <button onclick="siteLogout()" style="background:#6b7280;color:white;padding:7px 13px;font-size:13px;font-weight:600;border-radius:8px;border:none;cursor:pointer;font-family:inherit;flex-shrink:0">ログアウト</button>
+    </div>
+    <span id="active-store-label" style="font-size:20px;font-weight:700;color:#22703d"></span>
+  </div>
+
+  <div id="time-msg-bar"></div>
+
+  <!-- パートナー機能タブ -->
+  <div class="partner-tab-bar">
+    <button class="partner-tab active" id="ptab-order"     onclick="switchPartnerTab('order')">発注</button>
+    <button class="partner-tab"        id="ptab-lost"      onclick="switchPartnerTab('lost')">忘れ物</button>
+    <button class="partner-tab"        id="ptab-inventory" onclick="switchPartnerTab('inventory')">棚卸表</button>
+    <button class="partner-tab"        id="ptab-checklist" onclick="switchPartnerTab('checklist')">チェック<br class="sp-only">シート</button>
+  </div>
+
+  <!-- 発注タブ -->
+  <div id="partner-tab-order" class="partner-tab-content active">
+    <div class="toolbar">
+      <button class="btn-add" onclick="addRow()">＋ 発注依頼を追加</button>
+      <button class="btn-history" id="btn-history" onclick="toggleOrderHistory()">発注依頼 <span class="history-badge" id="history-badge" style="display:none"></span></button>
+    </div>
+    <div class="note-box">
+      【アペックス依頼時】<br>
+      ・1ケース＋他商品にてご依頼ください。例）コーヒー豆１ケース、フィルター１本、砂糖１袋<br>
+      <br>
+      【アペックス・トーヨーベンディング共通】<br>
+      ・納品は発注日から土日祝日を除く３営業日以内となります。（商品や地域により、納品に１週間程度かかる場合があります）
+    </div>
+    <div class="summary" id="store-summary"></div>
+    <div class="table-wrap" id="store-table-wrap">
+      <table id="store-table"><thead id="store-thead"></thead><tbody id="store-tbody"></tbody></table>
+    </div>
+    <div id="order-history-panel" style="display:none">
+      <div class="history-title">依頼済み履歴</div>
+      <div class="table-wrap">
+        <table id="history-table"><thead id="history-thead"></thead><tbody id="history-tbody"></tbody></table>
+      </div>
+    </div>
+  </div>
+
+  <!-- 棚卸表タブ（準備中） -->
+  <div id="partner-tab-inventory" class="partner-tab-content">
+    <div class="partner-coming-soon">
+      <div class="soon-icon"></div>
+      <div class="soon-label">棚卸表</div>
+      <div style="font-size:13px;margin-top:6px;color:#bbb">準備中です</div>
+    </div>
+  </div>
+
+  <!-- チェックシートタブ（準備中） -->
+  <div id="partner-tab-checklist" class="partner-tab-content">
+    <div class="partner-coming-soon">
+      <div class="soon-icon"></div>
+      <div class="soon-label">チェックシート</div>
+      <div style="font-size:13px;margin-top:6px;color:#bbb">準備中です</div>
+    </div>
+  </div>
+
+  <!-- 忘れ物タブ -->
+  <div id="partner-tab-lost" class="partner-tab-content">
+    <div style="max-width:700px">
+      <div style="font-weight:700;font-size:15px;color:#22703d;margin-bottom:8px">忘れ物登録</div>
+      <div style="font-size:12px;color:#b45309;background:#fef9c3;border:1px solid #fde68a;border-radius:6px;padding:8px 12px;margin-bottom:12px;line-height:1.7">
+        ※ 貴重品を発見した場合は最寄りの交番または警察署に届けてください。<br>
+        届出の際は以下の意向をお伝えください<br>
+        ①お礼（報労金）の受け取りは希望しない<br>
+        ②拾得物預かり書は不要<br>
+        ③持ち主が見つかっても当店の連絡先は不要
+      </div>
+      <div style="display:flex;gap:8px;align-items:flex-end;flex-wrap:wrap;margin-bottom:8px">
+        <div>
+          <div style="font-size:11px;color:#888;margin-bottom:4px">発見日</div>
+          <input type="date" id="lost-date-input"
+            style="border:1px solid #ddd;border-radius:6px;padding:7px 10px;font-size:13px;font-family:inherit">
+        </div>
+        <div style="flex:1;min-width:180px">
+          <div style="font-size:11px;color:#888;margin-bottom:4px">備考</div>
+          <textarea id="lost-note-input" placeholder="物品名・状況など" rows="2" oninput="autoGrow(this)"
+            style="border:1px solid #ddd;border-radius:6px;padding:7px 10px;font-size:13px;font-family:inherit;width:100%;resize:none;overflow-y:hidden;line-height:1.4"></textarea>
+        </div>
+        <div>
+          <div style="font-size:11px;color:#888;margin-bottom:4px">画像</div>
+          <label style="display:inline-flex;align-items:center;gap:6px;background:#f0f7e8;border:1px solid #b8d4a0;border-radius:6px;padding:7px 12px;font-size:13px;cursor:pointer;font-family:inherit;white-space:nowrap">
+            選択
+            <input type="file" id="lost-image-input" accept="image/*"
+              style="display:none" onchange="previewLostImage(this)">
+          </label>
+        </div>
+        <button id="lost-add-btn" onclick="addLostItem()"
+          style="background:#22703d;color:white;padding:8px 18px;font-size:13px;font-weight:600;border-radius:6px;border:none;cursor:pointer;font-family:inherit;white-space:nowrap">追加</button>
+      </div>
+      <div id="lost-image-preview" style="display:none;margin-bottom:10px">
+        <img id="lost-image-preview-img" style="max-height:120px;max-width:200px;border-radius:6px;border:1px solid #ddd;object-fit:cover">
+        <button onclick="clearLostImage()" style="margin-left:8px;background:#e0e0e0;color:#555;border:none;border-radius:5px;padding:4px 10px;font-size:12px;cursor:pointer;font-family:inherit">削除</button>
+      </div>
+      <div id="lost-items-list"></div>
+    </div>
+  </div>
+
+</div>
+
+<!-- 管理者ポータル -->
+<div id="page-admin" class="page">
+  <div class="page-header">
+    <div style="display:flex;align-items:center;gap:10px;flex:1;min-width:0;flex-wrap:wrap">
+      <h1>管理者ポータル</h1>
+      <div class="admin-menu-wrap">
+        <button class="admin-menu-btn" onclick="toggleAdminMenu()" title="メニュー">☰<span class="menu-label">メニュー</span></button>
+        <div class="admin-menu-dd" id="admin-menu-dd">
+          <div class="admin-menu-section">エリア</div>
+          <div class="admin-menu-item" id="menu-tokai"  onclick="menuSelect('region','tokai')">東海<span class="menu-badge" id="mbadge-tokai"  style="display:none"></span></div>
+          <div class="admin-menu-item" id="menu-kansai" onclick="menuSelect('region','kansai')">関西<span class="menu-badge" id="mbadge-kansai" style="display:none"></span></div>
+          <div class="admin-menu-item" id="menu-kanto"  onclick="menuSelect('region','kanto')">関東<span class="menu-badge" id="mbadge-kanto"  style="display:none"></span></div>
+          <div class="admin-menu-divider"></div>
+          <div class="admin-menu-section">表示</div>
+          <div class="admin-menu-item" id="menu-overview"  onclick="menuSelect('view','overview')">発注依頼一覧</div>
+          <div class="admin-menu-item" id="menu-history"   onclick="menuSelect('view','history')">履歴</div>
+          <div class="admin-menu-item" id="menu-lost"      onclick="menuSelect('view','lost')">忘れ物一覧</div>
+        </div>
+      </div>
+      <button class="admin-settings-btn" id="admin-settings-btn" onclick="menuSelect('view','settings')" title="設定"><span class="menu-label">設定</span></button>
+    </div>
+    <button onclick="adminLogout()" style="background:#6b7280;color:white;padding:9px 14px;font-size:13px;font-weight:600;border-radius:8px;border:none;cursor:pointer;font-family:inherit">ログアウト</button>
+  </div>
+
+  <div id="admin-time-msg-bar"></div>
+
+  <div class="sub-nav-wrap" id="admin-region-nav">
+    <button class="sub-tab active" id="sub-tokai"  onclick="switchRegion('tokai')">東海<span class="tab-badge" id="badge-tokai"  style="display:none"></span></button>
+    <button class="sub-tab"        id="sub-kansai" onclick="switchRegion('kansai')">関西<span class="tab-badge" id="badge-kansai" style="display:none"></span></button>
+    <button class="sub-tab"        id="sub-kanto"  onclick="switchRegion('kanto')">関東<span class="tab-badge" id="badge-kanto"  style="display:none"></span></button>
+  </div>
+  <div class="sub-nav-wrap level2 last">
+    <button class="sub-tab active" id="sub-overview" onclick="switchAdminView('overview')">発注依頼一覧</button>
+    <button class="sub-tab"        id="sub-history"  onclick="switchAdminView('history')">履歴</button>
+    <button class="sub-tab"        id="sub-lost"     onclick="switchAdminView('lost')">忘れ物一覧</button>
+  </div>
+
+  <div class="summary" id="admin-summary"></div>
+  <div class="table-wrap">
+    <table id="admin-table"><thead id="admin-thead"></thead><tbody id="admin-tbody"></tbody></table>
+  </div>
+  <div class="pagination" id="pagination" style="display:none"></div>
+  <div id="settings-container" style="display:none"></div>
+</div>
+
+<script>
+/* ===== Google Apps Script バックエンド ===== */
+const GAS_URL = 'https://script.google.com/macros/s/AKfycbzoqu607sj-rpYulIiDwnuyGSCTzoblzSqaq37cb5k5KiGsK7sisZew9sSRSBoYBSwo_A/exec';
+const ORDERS_CACHE = {};
+
+async function gasGet(action, params) {
+  const q = new URLSearchParams({ action, ...(params||{}) });
+  const res = await fetch(GAS_URL + '?' + q);
+  return res.json();
+}
+async function gasPost(action, body) {
+  const res = await fetch(GAS_URL, {
+    method: 'POST',
+    body: JSON.stringify({ action, ...body }),
+  });
+  return res.json();
+}
+let _adminPin = '0000';
+
+
+function _rowToDb(row, storeId) {
+  return {
+    id: row.id,
+    store_id: storeId,
+    group_id: row.groupId || null,
+    product: row.product || null,
+    label: row.label || null,
+    qty: (row.qty !== '' && row.qty != null) ? row.qty : null,
+    unit: row.unit || null,
+    case_unit: row.caseUnit || null,
+    note: row.note || null,
+    locked: row.locked || false,
+    is_new: row.isNew || false,
+    request_date: row.requestDate || null,
+    order_date: row.orderDate || null,
+    delivery_date: row.deliveryDate || null,
+    created_at: row.createdAt || null,
+    denied: row.denied || false,
+    image_url: row.imageUrl || null,
+  };
+}
+
+function _dbToRow(r) {
+  return {
+    id: r.id,
+    groupId: r.group_id,
+    product: r.product,
+    label: r.label,
+    qty: r.qty != null ? String(r.qty) : '',
+    unit: r.unit,
+    caseUnit: r.case_unit,
+    note: r.note,
+    locked: r.locked,
+    isNew: r.is_new,
+    requestDate: r.request_date || '',
+    orderDate: r.order_date || '',
+    deliveryDate: r.delivery_date || '',
+    createdAt: r.created_at,
+    denied: r.denied || false,
+    imageUrl: r.image_url || null,
+  };
+}
+
+async function _syncStoreToDb(storeId, rows) {
+  try {
+    const dbRows = rows.map(r => _rowToDb(r, storeId));
+    await gasPost('saveOrders', { storeId, rows: dbRows });
+  } catch(e) { console.error('GAS sync error:', e); }
+}
+
+async function _gasSaveSetting(key, value) {
+  try {
+    const r = await gasPost('saveSetting', { key, value });
+    return !r.error;
+  } catch(e) { console.error('GAS saveSetting error:', e); return false; }
+}
+function _syncStorePw() {
+  _gasSaveSetting('store_passwords', localStorage.getItem(STORE_PW_KEY) || '{}');
+}
+function _syncCustomStores() {
+  _gasSaveSetting('custom_stores', localStorage.getItem(CUSTOM_STORES_KEY) || '{}');
+}
+function _syncDeletedStores() {
+  _gasSaveSetting('deleted_stores', localStorage.getItem(DELETED_STORES_KEY) || '[]');
+}
+async function syncAllStoreDataToGas() {
+  const msg = document.getElementById('store-sync-msg');
+  if (msg) { msg.style.color='#888'; msg.textContent='同期中...'; }
+  const results = await Promise.all([
+    _gasSaveSetting('store_passwords', localStorage.getItem(STORE_PW_KEY) || '{}'),
+    _gasSaveSetting('custom_stores',   localStorage.getItem(CUSTOM_STORES_KEY) || '{}'),
+    _gasSaveSetting('deleted_stores',  localStorage.getItem(DELETED_STORES_KEY) || '[]'),
+  ]);
+  if (msg) {
+    msg.style.color = results.every(Boolean) ? '#22703d' : '#ef4444';
+    msg.textContent = results.every(Boolean) ? '✓ 同期しました' : '同期に失敗しました';
+    setTimeout(() => { if(msg) msg.textContent=''; }, 4000);
+  }
+}
+
+async function initGas() {
+  try {
+    const [orders, settings] = await Promise.all([
+      gasGet('getOrders'),
+      gasGet('getSettings'),
+    ]);
+    (orders || []).forEach(r => {
+      if (!ORDERS_CACHE[r.store_id]) ORDERS_CACHE[r.store_id] = [];
+      ORDERS_CACHE[r.store_id].push(_dbToRow(r));
+    });
+    const gasKeys = new Set((settings || []).map(r => r.key));
+    (settings || []).forEach(r => {
+      if (r.key === 'admin_pin')       _adminPin = r.value;
+      if (r.key === 'store_passwords') localStorage.setItem(STORE_PW_KEY,       r.value);
+      if (r.key === 'custom_stores')   localStorage.setItem(CUSTOM_STORES_KEY,  r.value);
+      if (r.key === 'deleted_stores')  localStorage.setItem(DELETED_STORES_KEY, r.value);
+    });
+    if (!gasKeys.has('store_passwords') && localStorage.getItem(STORE_PW_KEY)) _syncStorePw();
+    if (!gasKeys.has('custom_stores')   && localStorage.getItem(CUSTOM_STORES_KEY)) _syncCustomStores();
+    if (!gasKeys.has('deleted_stores')  && localStorage.getItem(DELETED_STORES_KEY)) _syncDeletedStores();
+    loadCustomStores();
+    loadDeletedStores();
+  } catch(e) { console.error('GAS init error:', e); }
+}
+
+function _dbToLostItem(r) {
+  return { id: r.id, foundDate: r.found_date || '', note: r.note || '', imageUrl: r.image_url || null, addedAt: r.added_at || 0 };
+}
+
+function _notifyLostChanged(storeId) {
+  // GASはリアルタイム非対応のためnoop
+}
+
+function _initRealtime() {
+  // GASはリアルタイム非対応のためnoop
+}
+
+
+const PRODUCTS = [
+  /* ── アペックス 100RS ── */
+  { vendor:'apex', name:'抹茶ラテ',                       label:'抹茶ラテ',                         unit:'袋',     caseUnit:'1ケース/18袋' },
+  { vendor:'apex', name:'コーヒー豆',                     label:'コーヒー豆',                       unit:'袋',     caseUnit:'1ケース/25袋' },
+  { vendor:'apex', name:'プレミアムココア',               label:'プレミアムココア',                 unit:'袋',     caseUnit:'1ケース/40袋' },
+  { vendor:'apex', name:'ザ・ブレンド豆',                label:'ザ・ブレンド豆',                  unit:'袋',     caseUnit:'1ケース/25袋' },
+  { vendor:'apex', name:'いちごオーレ',                   label:'いちごオーレ',                     unit:'袋',     caseUnit:'1ケース/20袋' },
+  { vendor:'apex', name:'クリーミー',                     label:'クリーミー',                       unit:'袋',     caseUnit:'1ケース/24袋' },
+  { vendor:'apex', name:'砂糖',                           label:'砂糖',                             unit:'袋',     caseUnit:'1ケース/20袋' },
+  { vendor:'apex', name:'紅茶(粉末)',                     label:'紅茶(粉末)',                       unit:'袋',     caseUnit:'1ケース/12袋' },
+  { vendor:'apex', name:'9オンス カップ蓋（12オンスもOK）GLDH09BD',  label:'9オンス カップ蓋（12オンスもOK）GLDH09BD',  unit:'本',  caseUnit:'1ケース/20本', caseOnly:true },
+  { vendor:'apex', name:'100RS用カップL（12オンス）SV-350P',         label:'100RS用カップL（12オンス）SV-350P',         unit:'袋',  caseUnit:'1ケース/20本', caseOnly:true },
+  { vendor:'apex', name:'100RS用カップM（9オンス）GDRV09PO',         label:'100RS用カップM（9オンス）GDRV09PO',         unit:'本',  caseUnit:'1ケース/20本', caseOnly:true },
+  { vendor:'apex', name:'ペーパーフィルター',             label:'ペーパーフィルター',               unit:'個',     caseUnit:'' },
+  { vendor:'apex', name:'烏龍茶',                         label:'烏龍茶',                           unit:'袋',     caseUnit:'' },
+  { vendor:'apex', name:'緑茶',                           label:'緑茶',                             unit:'袋',     caseUnit:'' },
+  { vendor:'apex', name:'コカ・コーラ',                   label:'コカ・コーラ',                     unit:'個',     caseUnit:'' },
+  { vendor:'apex', name:'まろやかブドウ',                 label:'まろやかブドウ',                   unit:'個',     caseUnit:'' },
+  { vendor:'apex', name:'レモネード',                     label:'レモネード',                       unit:'袋',     caseUnit:'' },
+  /* ── トーヨーベンディング ── */
+  { vendor:'toyo', name:'㋣緑茶',                                   label:'㋣緑茶',                                   unit:'袋',  caseUnit:'' },
+  { vendor:'toyo', name:'㋣カップ（12オンス）',                     label:'㋣カップ（12オンス）',                     unit:'箱',  caseUnit:'1ケース/20本' },
+  { vendor:'toyo', name:'㋣断熱発泡カップ（9オンス）',             label:'㋣断熱発泡カップ（9オンス）',             unit:'箱',  caseUnit:'1ケース/20本' },
+  { vendor:'toyo', name:'㋣紅茶',                                   label:'㋣紅茶',                                   unit:'袋',  caseUnit:'' },
+  { vendor:'toyo', name:'㋣抹茶ラテ',                               label:'㋣抹茶ラテ',                               unit:'袋',  caseUnit:'' },
+  { vendor:'toyo', name:'㋣特選ココア',                              label:'㋣特選ココア',                              unit:'袋',  caseUnit:'' },
+  { vendor:'toyo', name:'㋣ペーパーフィルター',                     label:'㋣ペーパーフィルター',                     unit:'個',  caseUnit:'' },
+  { vendor:'toyo', name:'㋣カップ蓋　リッド（9オンス/12オンスカップ対応）', label:'㋣カップ蓋　リッド（9オンス/12オンスカップ対応）', unit:'箱',  caseUnit:'' },
+  { vendor:'toyo', name:'㋣ブライトクリーミー',                     label:'㋣ブライトクリーミー',                     unit:'袋',  caseUnit:'' },
+  { vendor:'toyo', name:'㋣専用グラニュー糖',                       label:'㋣専用グラニュー糖',                       unit:'袋',  caseUnit:'' },
+  { vendor:'toyo', name:'㋣ミル挽き珈琲　ブレンドB',               label:'㋣ミル挽き珈琲　ブレンドB',               unit:'袋',  caseUnit:'1セット/4袋' },
+  { vendor:'toyo', name:'㋣ミル挽き珈琲　ブレンドA',               label:'㋣ミル挽き珈琲　ブレンドA',               unit:'袋',  caseUnit:'1セット/4袋' },
+  { vendor:'toyo', name:'㋣なっちゃんオレンジBIB(2.5ガロン）',     label:'㋣なっちゃんオレンジBIB(2.5ガロン）',     unit:'箱',  caseUnit:'1ケース/2箱' },
+  /* ── 55D CS3 ── */
+  { vendor:'cs3', name:'55D用カップM（ビビ＆けん）GCCVZ9P0',           label:'55D用カップM（ビビ＆けん）GCCVZ9P0',           unit:'本',  caseUnit:'1ケース/25本' },
+  { vendor:'cs3', name:'CS3用カップL（14オンス）SVT-420-2',             label:'CS3用カップL（14オンス）SVT-420-2',             unit:'本',  caseUnit:'1ケース/20本' },
+  { vendor:'cs3', name:'CS3用カップL蓋（14オンス）SVT-311LF',           label:'CS3用カップL蓋（14オンス）SVT-311LF',           unit:'本',  caseUnit:'1ケース/24本' },
+  { vendor:'cs3', name:'アイスカップM S96-365',                         label:'アイスカップM S96-365',                         unit:'本',  caseUnit:'1ケース/20本' },
+  { vendor:'cs3', name:'アイスカップL S96-450',                         label:'アイスカップL S96-450',                         unit:'本',  caseUnit:'1ケース/20本' },
+  { vendor:'cs3', name:'アイスカップ蓋（96口径 プラフタ ストロー穴付）', label:'アイスカップ蓋（96口径 プラフタ ストロー穴付）', unit:'本',  caseUnit:'1ケース/20本' },
+  { vendor:'cs3', name:'スティックシュガー',                            label:'スティックシュガー',                            unit:'箱',  caseUnit:'' },
+  { vendor:'cs3', name:'ガムシロップ',                                  label:'ガムシロップ',                                  unit:'箱',  caseUnit:'' },
+  { vendor:'cs3', name:'ミルク（コーヒーフレッシュ）',                  label:'ミルク（コーヒーフレッシュ）',                  unit:'箱',  caseUnit:'' },
+  /* ── その他 ── */
+  { vendor:'other', name:'ストロー',                       label:'ストロー',                         unit:'箱',     caseUnit:'' },
+  { vendor:'other', name:'ペーパータオル',                 label:'ペーパータオル',                   unit:'箱',     caseUnit:'1セット36箱',  caseOnly:true },
+  { vendor:'other', name:'トイレットペーパー',             label:'トイレットペーパー',               unit:'箱',     caseUnit:'' },
+  { vendor:'other', name:'アイス　チョコ　レディーボーデン',                label:'アイス　チョコ　レディーボーデン',                unit:'箱',  caseUnit:'1ケース/36個', caseOnly:true },
+  { vendor:'other', name:'アイス　バニラ　レディーボーデン',                label:'アイス　バニラ　レディーボーデン',                unit:'箱',  caseUnit:'1ケース/36個', caseOnly:true },
+  { vendor:'other', name:'アイス　クッキーアンドクリーム　レディーボーデン', label:'アイス　クッキーアンドクリーム　レディーボーデン', unit:'箱',  caseUnit:'1ケース/36個', caseOnly:true },
+  { vendor:'other', name:'水',                             label:'水',                               unit:'箱',     caseUnit:'1ケース/24本', caseOnly:true },
+  { vendor:'other', name:'クランキーアーモンドチョコレートプチパック', label:'クランキーアーモンドチョコレートプチパック', unit:'袋', caseUnit:'' },
+  { vendor:'other', name:'果汁グミ',                       label:'果汁グミ',                           unit:'袋',     caseUnit:'' },
+  { vendor:'other', name:'プリングルス',                   label:'プリングルス',                       unit:'袋',     caseUnit:'' },
+  { vendor:'other', name:'ソイジョイ',                     label:'ソイジョイ',                         unit:'袋',     caseUnit:'' },
+  { vendor:'other', name:'プチシリーズ',                   label:'プチシリーズ',                       unit:'袋',     caseUnit:'' },
+  { vendor:'other', name:'大粒ラムネ',                     label:'大粒ラムネ',                         unit:'袋',     caseUnit:'' },
+  { vendor:'other', name:'その他',                         label:'その他',                               unit:'',       caseUnit:'' },
+];
+
+let VENDOR_CONFIG = [
+  {key:'apex',  label:'アペックス 100RS'},
+  {key:'toyo',  label:'トーヨーベンディング'},
+  {key:'cs3',   label:'55D CS3'},
+  {key:'other', label:'その他'},
+];
+const VENDOR_CONFIG_KEY = 'vendor_config';
+function saveVendorConfig() { localStorage.setItem(VENDOR_CONFIG_KEY, JSON.stringify(VENDOR_CONFIG)); }
+function loadVendorConfig() {
+  const saved = localStorage.getItem(VENDOR_CONFIG_KEY);
+  if (saved) { VENDOR_CONFIG.length = 0; JSON.parse(saved).forEach(v => VENDOR_CONFIG.push(v)); }
+}
+
+const STORES = {
+  /* 東海 */
+  sasashima:'ささしまライブ', chikusa:'千種', gokaiso:'御器所', tsuruma:'鶴舞',
+  kamisawa:'神沢', nakamura_nisseki:'中村日赤', midori_kofubutsu:'緑鴻仏目',
+  sakurayama:'桜山', akatsuka:'赤塚', shin_moriyama:'新守山', tokoname:'常滑',
+  hamamatsu:'浜松新橋', sakae:'栄', rokubanchou:'六番町', nonami:'野並',
+  seto_iwayadou:'瀬戸岩屋堂', nagakute:'長久手', meieki_nishi:'名駅西口',
+  nadia_sakae:'ナディアパーク栄', shinmizuhashi:'新瑞橋', eisei:'栄生',
+  hotei:'布袋駅', kamejima:'亀島', nakamura_torii:'中村日赤鳥居通',
+  taikodori:'太閤通駅', kouta:'幸田', hibino:'日比野', hoshigaoka:'星が丘',
+  ikeshita:'池下', toyota:'T-FACE豊田', hara:'原', fujigaoka:'藤が丘',
+  gifu_kitagata:'イオンタウン岐阜北方', narumi:'鳴海山下',
+  /* 関西 */
+  tenma:'天満', higashiosaka:'東大阪小若江', aikawa:'相川駅前',
+  minami_morimachi:'南森町', abeno:'あべの南', tanimachi9:'谷町九丁目',
+  moriguchi:'守口駅前', taishibashi:'太子橋', kyobashi_kita:'京橋北',
+  shinsaibashi:'心斎橋東急ビル', kishi:'喜志', umeda:'梅田センタービル',
+  kami_shinjyo:'上新庄', osaka_hirano:'大阪平野西', hikone:'イオンタウン彦根',
+  aeon_higashiosaka:'イオンタウン東大阪', gamo4:'蒲生四丁目',
+  /* 関東 */
+  inzai:'印西牧の原', otsuka:'大塚駅南口', sugamo:'巣鴨駅南口',
+  umejima:'梅島（うめじま）', shibuya:'渋谷神南',
+  shinjuku_fc:'FC 新宿西口Shinjuku Future Gallery', kamisato:'カインズ上里本庄',
+};
+const REGIONS = {
+  tokai: { label:'東海', stores:[
+    'sasashima','chikusa','gokaiso','tsuruma','kamisawa','nakamura_nisseki',
+    'midori_kofubutsu','sakurayama','akatsuka','shin_moriyama','tokoname',
+    'hamamatsu','sakae','rokubanchou','nonami','seto_iwayadou','nagakute',
+    'meieki_nishi','nadia_sakae','shinmizuhashi','eisei','hotei','kamejima',
+    'nakamura_torii','taikodori','kouta','hibino','hoshigaoka','ikeshita',
+    'toyota','hara','fujigaoka','gifu_kitagata','narumi',
+  ]},
+  kansai: { label:'関西', stores:[
+    'tenma','higashiosaka','aikawa','minami_morimachi','abeno','tanimachi9',
+    'moriguchi','taishibashi','kyobashi_kita','shinsaibashi','kishi','umeda',
+    'kami_shinjyo','osaka_hirano','hikone','aeon_higashiosaka','gamo4',
+  ]},
+  kanto: { label:'関東', stores:[
+    'inzai','otsuka','sugamo','umejima','shibuya','shinjuku_fc','kamisato',
+  ]},
+};
+
+let storeTab    = 'sasashima';
+let adminRegion = 'tokai';
+let adminView   = 'overview';
+let adminPage   = 1;
+let storeRows   = [];
+const PAGE_SIZE = 10;
+const isMobile  = () => window.innerWidth < 640;
+
+const hKey = id => 'history_' + id;
+
+/* items配列を持つ旧形式 → フラット行に変換、groupId を付与 */
+function migrateRows(rows) {
+  const result = [];
+  rows.forEach(r => {
+    if (r.items) {
+      const gid = r.id;
+      r.items.forEach((item, i) => {
+        result.push({ id: i===0 ? r.id : uid(), groupId: gid, requestDate: r.requestDate||'', orderDate: r.orderDate||'', deliveryDate: r.deliveryDate||'', product: item.product||'', qty: item.qty||'', note: r.note||'', isNew: r.isNew||false });
+      });
+    } else {
+      if (!r.groupId) r.groupId = r.id;
+      result.push(r);
+    }
+  });
+  return result.length ? result : rows;
+}
+
+const loadA = id => migrateRows(ORDERS_CACHE[id] ? [...ORDERS_CACHE[id]] : []);
+const saveA = (id, rows) => { ORDERS_CACHE[id] = rows; _syncStoreToDb(id, rows); };
+const loadH = id => migrateRows(JSON.parse(localStorage.getItem(hKey(id)) || '[]'));
+const saveH = (id, r) => localStorage.setItem(hKey(id), JSON.stringify(r));
+
+function purgeHistory() {
+  const limit = Date.now() - 30*24*60*60*1000;
+  Object.keys(STORES).forEach(id => saveH(id, loadH(id).filter(r => (r.deliveredAt||0) > limit)));
+}
+
+const uid     = () => Date.now().toString(36) + Math.random().toString(36).slice(2);
+const today   = () => new Date().toISOString().slice(0,10);
+const fmtDate = ts => ts ? new Date(ts).toLocaleDateString('ja-JP') : '';
+const overdue = d  => !!d && d < today();
+const esc     = s  => (s == null ? '' : String(s)).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+
+const prodByName    = n => PRODUCTS.find(p => p.name===n) || null;
+const unitLabelText = n => { const p = prodByName(n); if (!p) return ''; if (p.caseOnly) return `ケース（${p.caseUnit}）`; return p.caseUnit ? `${p.unit}（${p.caseUnit}）` : p.unit; };
+
+function displayCell(value) {
+  return value ? `<div class="display-cell">${esc(value)}</div>` : `<div class="display-cell empty">入力不要</div>`;
+}
+
+function countNewGroups(sid) {
+  const rows = loadA(sid).filter(r => r.locked && r.isNew && !r.denied);
+  return new Set(rows.map(r => r.groupId || r.id)).size;
+}
+
+function updateBadges() {
+  let total = 0;
+  Object.entries(REGIONS).forEach(([rId, region]) => {
+    const n = region.stores.reduce((c,sid) => c + countNewGroups(sid), 0);
+    const b = document.getElementById('badge-'+rId);
+    if (b) { b.textContent = n; b.style.display = n>0 ? '' : 'none'; }
+    const mb = document.getElementById('mbadge-'+rId);
+    if (mb) { mb.textContent = n; mb.style.display = n>0 ? '' : 'none'; }
+    total += n;
+  });
+  const b2 = document.getElementById('store-to-admin-badge');
+  if (b2) { b2.textContent = total; b2.style.display = total>0 ? '' : 'none'; }
+}
+
+/* ===== サイトログイン ===== */
+/* ===== 時間帯メッセージ ===== */
+function getTimeMsg() {
+  const h = new Date().getHours();
+  if (h >= 5  && h <= 10) return 'おはようございます。今日も頑張りましょう。';
+  if (h >= 11 && h <= 13) return 'お疲れさまです。少し深呼吸して、ひと息ついてくださいね。';
+  if (h >= 14 && h <= 16) return '午後もお疲れさまです。軽くストレッチして、気分転換してみませんか？';
+  if (h >= 17 && h <= 19) return '今日も一日お疲れさまでした。';
+  if (h >= 20 && h <= 23) return 'お疲れさまです。身体を休めてくださいね。';
+  return 'こんな時間まですごい！でも大丈夫ですか？無理は禁物ですよ。';
+}
+function applyTimeMsg() {
+  const msg = getTimeMsg();
+  ['time-msg-bar','admin-time-msg-bar'].forEach(id => {
+    const bar = document.getElementById(id);
+    if (bar) { bar.textContent = msg; bar.style.display = 'block'; }
+  });
+}
+
+/* ===== パートナーポータル タブ切り替え ===== */
+let partnerTabCurrent = 'order';
+async function switchPartnerTab(tab) {
+  partnerTabCurrent = tab;
+  ['order','inventory','checklist','lost'].forEach(t => {
+    document.getElementById('ptab-'+t)?.classList.toggle('active', t===tab);
+    document.getElementById('partner-tab-'+t)?.classList.toggle('active', t===tab);
+  });
+  if (tab === 'lost') {
+    const di = document.getElementById('lost-date-input');
+    if (di && !di.value) di.value = new Date().toLocaleDateString('sv');
+    renderLostItems(true); // ローディング表示
+    await loadLostItemsFromDb(storeTab);
+    renderLostItems();
+  }
+}
+
+/* ===== 忘れ物（Supabase） ===== */
+const LOST_CACHE = {}; // { [storeId]: [items] }
+
+function getLostItems(storeId) {
+  return LOST_CACHE[storeId] || [];
+}
+
+async function loadLostItemsFromDb(storeId) {
+  try {
+    const data = await gasGet('getLostItems', { storeId });
+    LOST_CACHE[storeId] = (data || []).map(r => ({
+      id: r.id, foundDate: r.found_date || '', note: r.note || '',
+      imageUrl: r.image_url || null, addedAt: r.added_at || 0,
+    })).sort((a, b) => b.addedAt - a.addedAt);
+  } catch(e) { console.error('loadLostItems error:', e); LOST_CACHE[storeId] = []; }
+}
+
+function compressLostImage(file) {
+  return new Promise(resolve => {
+    const reader = new FileReader();
+    reader.onload = e => {
+      const img = new Image();
+      img.onload = () => {
+        const MAX = 900;
+        let w = img.width, h = img.height;
+        if (w > MAX || h > MAX) {
+          if (w > h) { h = Math.round(h * MAX / w); w = MAX; }
+          else       { w = Math.round(w * MAX / h); h = MAX; }
+        }
+        const canvas = document.createElement('canvas');
+        canvas.width = w; canvas.height = h;
+        canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+        canvas.toBlob(blob => resolve(blob), 'image/jpeg', 0.75);
+      };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+function _blobToBase64(blob) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result.split(',')[1]);
+    reader.onerror = reject;
+    reader.readAsDataURL(blob);
+  });
+}
+
+async function uploadLostImage(blob) {
+  const base64 = await _blobToBase64(blob);
+  const id = uid();
+  const r = await gasPost('saveLostItem', {
+    item: { id, image_url: null },
+    imageBase64: base64,
+    imageMime: 'image/jpeg',
+  });
+  if (r.error) throw new Error(r.error);
+  return r.image_url;
+}
+
+async function uploadOrderImage(file) {
+  try {
+    const blob   = await compressLostImage(file);
+    const base64 = await _blobToBase64(blob);
+    const id = uid();
+    const r = await gasPost('saveLostItem', {
+      item: { id, image_url: null },
+      imageBase64: base64,
+      imageMime: 'image/jpeg',
+    });
+    if (r.error) { alert('写真アップロード失敗: ' + r.error); return null; }
+    return r.image_url;
+  } catch(e) { alert('写真アップロード失敗: ' + e.message); return null; }
+}
+
+async function handleOrderPhotoUpload(groupId, input) {
+  const file = input.files[0]; if (!file) return;
+  const url = await uploadOrderImage(file);
+  if (!url) return;
+  const grp = buildStoreGroups(storeRows).find(g => (g[0].groupId || g[0].id) === groupId);
+  if (grp) { grp[0].imageUrl = url; saveA(storeTab, storeRows); renderStore(); }
+}
+
+function removeOrderPhoto(groupId) {
+  const grp = buildStoreGroups(storeRows).find(g => (g[0].groupId || g[0].id) === groupId);
+  if (grp) { grp[0].imageUrl = null; saveA(storeTab, storeRows); renderStore(); }
+}
+
+let _lostImageBlob = null;
+let _lostImagePreviewUrl = null;
+
+function previewLostImage(input) {
+  const file = input.files?.[0];
+  if (!file) return;
+  compressLostImage(file).then(blob => {
+    _lostImageBlob = blob;
+    if (_lostImagePreviewUrl) URL.revokeObjectURL(_lostImagePreviewUrl);
+    _lostImagePreviewUrl = URL.createObjectURL(blob);
+    const prev = document.getElementById('lost-image-preview');
+    const img  = document.getElementById('lost-image-preview-img');
+    if (prev && img) { img.src = _lostImagePreviewUrl; prev.style.display = 'flex'; prev.style.alignItems = 'center'; }
+  });
+}
+
+function clearLostImage() {
+  _lostImageBlob = null;
+  if (_lostImagePreviewUrl) { URL.revokeObjectURL(_lostImagePreviewUrl); _lostImagePreviewUrl = null; }
+  const inp  = document.getElementById('lost-image-input');
+  const prev = document.getElementById('lost-image-preview');
+  if (inp)  inp.value = '';
+  if (prev) prev.style.display = 'none';
+}
+
+function showLostImage(src) {
+  const overlay = document.getElementById('lost-img-overlay');
+  const img     = document.getElementById('lost-img-overlay-img');
+  if (!overlay || !img) return;
+  img.src = src;
+  overlay.style.display = 'flex';
+}
+function closeLostImage() {
+  const overlay = document.getElementById('lost-img-overlay');
+  if (overlay) overlay.style.display = 'none';
+}
+
+async function addLostItem() {
+  const dateEl  = document.getElementById('lost-date-input');
+  const noteEl  = document.getElementById('lost-note-input');
+  const addBtn  = document.getElementById('lost-add-btn');
+  const foundDate = dateEl?.value || '';
+  const note      = noteEl?.value.trim() || '';
+  if (!foundDate && !note) { alert('発見日または備考を入力してください。'); return; }
+  if (addBtn) { addBtn.disabled = true; addBtn.textContent = '保存中…'; }
+  try {
+    const itemId = uid();
+    const addedAt = Date.now();
+    let imageUrl = null;
+    const base64 = _lostImageBlob ? await _blobToBase64(_lostImageBlob) : null;
+    const item = { id: itemId, foundDate, note, imageUrl, addedAt };
+    const r = await gasPost('saveLostItem', {
+      item: { id: itemId, store_id: storeTab, found_date: foundDate || null,
+              note: note || null, image_url: null, added_at: addedAt },
+      imageBase64: base64,
+      imageMime: 'image/jpeg',
+    });
+    if (r.error) throw new Error(r.error);
+    if (r.image_url) item.imageUrl = r.image_url;
+    if (!LOST_CACHE[storeTab]) LOST_CACHE[storeTab] = [];
+    LOST_CACHE[storeTab].unshift(item);
+    if (dateEl) dateEl.value = new Date().toLocaleDateString('sv');
+    if (noteEl) noteEl.value = '';
+    clearLostImage();
+    renderLostItems();
+    _notifyLostChanged(storeTab);
+  } catch(e) {
+    console.error('addLostItem error:', e);
+    alert('保存に失敗しました: ' + e.message);
+  } finally {
+    if (addBtn) { addBtn.disabled = false; addBtn.textContent = '追加'; }
+  }
+}
+
+async function deleteLostItem(storeId, itemId) {
+  const item = getLostItems(storeId).find(x => x.id === itemId);
+  if (LOST_CACHE[storeId]) LOST_CACHE[storeId] = LOST_CACHE[storeId].filter(x => x.id !== itemId);
+  if (storeId === storeTab && partnerTabCurrent === 'lost') renderLostItems();
+  if (adminView === 'lost') renderLostAdmin();
+  try {
+    await gasPost('deleteLostItem', { id: itemId, imageUrl: item?.imageUrl || null });
+  } catch(e) { console.error('deleteLostItem error:', e); }
+}
+
+function buildLostTable(items, storeId) {
+  if (!items.length) return '<div style="color:#aaa;font-size:13px;padding:10px 0">該当する忘れ物はありません</div>';
+  return `<table style="width:100%;border-collapse:collapse;font-size:13px">
+    <thead><tr style="background:#c2d63a;color:#1a2a05">
+      <th style="padding:8px 10px;text-align:left;font-size:12px;width:100px">発見日</th>
+      <th style="padding:8px 10px;text-align:left;font-size:12px">備考</th>
+      <th style="padding:8px 10px;text-align:left;font-size:12px;width:70px">画像</th>
+      <th style="padding:8px 10px;width:60px"></th>
+    </tr></thead><tbody>
+    ${items.map(item => `<tr style="border-bottom:1px solid #eee">
+      <td style="padding:8px 10px;white-space:nowrap;width:100px">${esc(item.foundDate)||'—'}</td>
+      <td style="padding:8px 10px;white-space:pre-wrap;word-break:break-all">${esc(item.note)}</td>
+      <td style="padding:6px 8px">
+        ${item.imageUrl
+          ? `<img src="${esc(item.imageUrl)}" onclick="showLostImage(this.src)"
+              style="width:52px;height:52px;object-fit:cover;border-radius:5px;border:1px solid #ddd;cursor:zoom-in">`
+          : '<span style="color:#ccc;font-size:11px">なし</span>'}
+      </td>
+      <td style="padding:8px 10px;text-align:center">
+        <button onclick="deleteLostItem('${storeId}','${item.id}')" style="background:#ef4444;color:white;padding:4px 10px;font-size:12px;border-radius:5px;border:none;cursor:pointer;font-family:inherit">削除</button>
+      </td>
+    </tr>`).join('')}
+    </tbody></table>`;
+}
+
+function renderLostItems(loading = false) {
+  const container = document.getElementById('lost-items-list');
+  if (!container) return;
+  if (loading) { container.innerHTML = '<div style="color:#aaa;font-size:13px;padding:10px 0">読み込み中…</div>'; return; }
+  const items = getLostItems(storeTab).slice().sort((a,b) => (b.foundDate||'').localeCompare(a.foundDate||''));
+  container.innerHTML = buildLostTable(items, storeTab);
+}
+
+/* ===== 店舗別商品設定 ===== */
+const STORE_PRODUCTS_KEY = 'store_product_cfg';
+function getStoreProductConfig(storeId) {
+  const cfg = JSON.parse(localStorage.getItem(STORE_PRODUCTS_KEY) || '{}');
+  return cfg[storeId] || null;
+}
+function setStoreProductConfig(storeId, productNames) {
+  const cfg = JSON.parse(localStorage.getItem(STORE_PRODUCTS_KEY) || '{}');
+  cfg[storeId] = productNames;
+  localStorage.setItem(STORE_PRODUCTS_KEY, JSON.stringify(cfg));
+}
+function getAvailableProducts(storeId) {
+  const cfg = getStoreProductConfig(storeId);
+  return cfg ? PRODUCTS.filter(p => cfg.includes(p.name)) : PRODUCTS;
+}
+
+const SITE_PW        = 'selfcafe001';
+const SESSION_MS     = 30 * 60 * 1000; // 30分
+const STORE_PW_KEY   = 'store_passwords';
+
+function getStorePassword(storeId) {
+  const pws = JSON.parse(localStorage.getItem(STORE_PW_KEY) || '{}');
+  return pws[storeId] || SITE_PW;
+}
+function setStorePassword(storeId, pw) {
+  const pws = JSON.parse(localStorage.getItem(STORE_PW_KEY) || '{}');
+  pws[storeId] = pw;
+  localStorage.setItem(STORE_PW_KEY, JSON.stringify(pws));
+  _syncStorePw();
+}
+function clearStorePassword(storeId) {
+  const pws = JSON.parse(localStorage.getItem(STORE_PW_KEY) || '{}');
+  delete pws[storeId];
+  localStorage.setItem(STORE_PW_KEY, JSON.stringify(pws));
+  _syncStorePw();
+}
+
+function populateLoginStoreSelect() {
+  const inp = document.getElementById('site-pw-input');
+  if (inp) inp.value = '';
+}
+
+function _loginStoreCandidates(q) {
+  const lower = (q || '').toLowerCase();
+  const out = [];
+  if (!lower || '管理者'.includes(lower)) out.push({ sid: '__admin__', name: '管理者', region: 'システム管理' });
+  Object.entries(REGIONS).forEach(([, r]) => {
+    r.stores.forEach(sid => {
+      const name = STORES[sid] || sid;
+      if (!lower || name.toLowerCase().includes(lower)) out.push({ sid, name, region: r.label });
+    });
+  });
+  return out;
+}
+
+function showLoginStoreDD() {
+  renderLoginStoreDD(document.getElementById('site-store-search')?.value || '');
+}
+
+function filterLoginStores() {
+  _loginStoreId = '';
+  renderLoginStoreDD(document.getElementById('site-store-search')?.value || '');
+}
+
+function renderLoginStoreDD(q) {
+  const dd = document.getElementById('site-store-dd');
+  if (!dd) return;
+  const items = _loginStoreCandidates(q);
+  dd.innerHTML = items.length
+    ? items.map(({ sid, name, region }) =>
+        `<div onclick="selectLoginStore('${sid}','${esc(name)}')"
+          style="padding:11px 14px;font-size:14px;cursor:pointer;border-bottom:1px solid #f0f0f0;color:#333"
+          onmouseover="this.style.background='#f0f7e8'" onmouseout="this.style.background=''">
+          <span style="font-weight:600">${esc(name)}</span>
+          <span style="font-size:11px;color:#999;margin-left:6px">${esc(region)}</span>
+        </div>`
+      ).join('')
+    : '<div style="padding:12px 14px;color:#aaa;font-size:14px">該当なし</div>';
+  dd.style.display = 'block';
+}
+
+function selectLoginStore(sid, name) {
+  _loginStoreId = sid;
+  const inp = document.getElementById('site-store-search');
+  if (inp) inp.value = name;
+  document.getElementById('site-store-dd').style.display = 'none';
+  setTimeout(() => document.getElementById('site-pw-input')?.focus(), 50);
+}
+
+function loginStoreKeydown(event) {
+  if (event.key === 'Escape') document.getElementById('site-store-dd').style.display = 'none';
+  if (event.key === 'Enter') {
+    const items = _loginStoreCandidates(document.getElementById('site-store-search')?.value || '');
+    if (items.length === 1) selectLoginStore(items[0].sid, items[0].name);
+  }
+}
+
+const isSiteAuthed = () => {
+  if (sessionStorage.getItem('site_authed') !== '1') return false;
+  if (!sessionStorage.getItem('site_authed_store')) return false;
+  const last = parseInt(sessionStorage.getItem('last_active') || '0');
+  return (Date.now() - last) <= SESSION_MS;
+};
+
+function touchActivity() {
+  if (sessionStorage.getItem('site_authed') === '1') {
+    sessionStorage.setItem('last_active', String(Date.now()));
+  }
+}
+
+function adminLogout() {
+  sessionStorage.removeItem('admin_authed');
+  document.getElementById('page-admin').classList.remove('active');
+  const lock = document.getElementById('site-lock');
+  lock.classList.remove('hidden');
+  const inp = document.getElementById('site-pw-input');
+  inp.value = '';
+  setTimeout(() => inp.focus(), 100);
+}
+
+function siteLogout() {
+  sessionStorage.removeItem('site_authed');
+  sessionStorage.removeItem('site_authed_store');
+  sessionStorage.removeItem('admin_authed');
+  document.getElementById('page-store').classList.remove('active');
+  document.getElementById('page-admin').classList.remove('active');
+  const lock = document.getElementById('site-lock');
+  lock.classList.remove('hidden');
+  const inp = document.getElementById('site-pw-input');
+  inp.value = '';
+  populateLoginStoreSelect();
+  setTimeout(() => inp.focus(), 100);
+}
+
+function autoLogout() {
+  sessionStorage.removeItem('site_authed');
+  sessionStorage.removeItem('site_authed_store');
+  sessionStorage.removeItem('admin_authed');
+  document.getElementById('page-store').classList.remove('active');
+  document.getElementById('page-admin').classList.remove('active');
+  const lock = document.getElementById('site-lock');
+  lock.classList.remove('hidden');
+  const inp = document.getElementById('site-pw-input');
+  inp.value = '';
+  populateLoginStoreSelect();
+  document.getElementById('site-pw-error').textContent = 'セッションが切れました。再度ログインしてください。';
+  setTimeout(() => { document.getElementById('site-pw-error').textContent = ''; inp.focus(); }, 100);
+}
+
+/* 1分ごとにセッション期限を確認 */
+setInterval(() => {
+  if (sessionStorage.getItem('site_authed') === '1' && !isSiteAuthed()) autoLogout();
+}, 60 * 1000);
+
+function showPwField(id, e) {
+  e.preventDefault();
+  const el = document.getElementById(id);
+  if (el) el.type = 'text';
+}
+function hidePwField(id) {
+  const el = document.getElementById(id);
+  if (el) el.type = 'password';
+}
+
+function submitSiteLogin() {
+  const val = document.getElementById('site-pw-input').value.trim();
+  const err = document.getElementById('site-pw-error');
+  if (!val) { err.textContent = 'パスワードを入力してください'; setTimeout(() => { err.textContent=''; }, 2000); return; }
+
+  // store_passwordsから照合（{storeId: password}形式）
+  const customPws = JSON.parse(localStorage.getItem(STORE_PW_KEY) || '{}');
+  let storeId = Object.entries(customPws).find(([, pw]) => pw === val)?.[0] || null;
+
+  if (!storeId) {
+    err.textContent = 'パスワードが違います';
+    document.getElementById('site-pw-input').value = '';
+    document.getElementById('site-pw-input').focus();
+    setTimeout(() => { err.textContent = ''; }, 2000);
+    return;
+  }
+  if (storeId === '__admin__') {
+    sessionStorage.setItem('admin_authed', '1');
+    sessionStorage.setItem('last_active', String(Date.now()));
+    document.getElementById('site-lock').classList.add('hidden');
+    showPage('admin');
+  } else {
+    sessionStorage.setItem('site_authed', '1');
+    sessionStorage.setItem('site_authed_store', storeId);
+    sessionStorage.setItem('last_active', String(Date.now()));
+    localStorage.setItem('last_login_store', storeId);
+    document.getElementById('site-lock').classList.add('hidden');
+    storeTab = storeId;
+    showPage('store');
+  }
+}
+
+/* ===== 管理者認証 ===== */
+const getPin   = () => _adminPin;
+const isAuthed = () => sessionStorage.getItem('admin_authed') === '1';
+
+function showPage(p) {
+  if (p === 'admin' && !isAuthed()) { showLock(); return; }
+  if (p === 'store') {
+    const authedStore = sessionStorage.getItem('site_authed_store');
+    if (authedStore && STORES[authedStore]) {
+      storeTab = authedStore;
+      storeRows = loadA(authedStore);
+      if (!storeRows.length) { storeRows.push(newRow(null, null)); saveA(authedStore, storeRows); }
+      const lbl = document.getElementById('active-store-label');
+      if (lbl) lbl.textContent = STORES[authedStore] + '店';
+    }
+    const navSearch = document.getElementById('store-nav-search');
+    if (navSearch) navSearch.style.display = 'none';
+  }
+  document.getElementById('page-store').classList.toggle('active', p==='store');
+  document.getElementById('page-admin').classList.toggle('active', p==='admin');
+  if (p==='store') renderStore();
+  if (p==='admin') renderAdmin();
+  updateBadges();
+  applyTimeMsg();
+}
+window.addEventListener('hashchange', () => showPage(location.hash==='#admin' ? 'admin' : 'store'));
+
+function showLock() {
+  location.hash = '#admin';
+  document.getElementById('lock-overlay').classList.add('show');
+  const inp = document.getElementById('pin-input');
+  inp.value = '';
+  document.getElementById('pin-error').textContent = '';
+  setTimeout(() => inp.focus(), 100);
+}
+
+function submitPin() {
+  const entered = document.getElementById('pin-input').value;
+  if (entered === getPin()) {
+    sessionStorage.setItem('admin_authed', '1');
+    document.getElementById('lock-overlay').classList.remove('show');
+    document.getElementById('page-store').classList.remove('active');
+    document.getElementById('page-admin').classList.add('active');
+    renderAdmin();
+    updateBadges();
+  } else {
+    const err = document.getElementById('pin-error');
+    err.textContent = 'PINが違います';
+    document.getElementById('pin-input').value = '';
+    document.getElementById('pin-input').focus();
+    setTimeout(() => { err.textContent = ''; }, 2000);
+  }
+}
+
+/* ===== 商品検索UI ===== */
+function productSearchHTML(rowId, selectedName) {
+  const label = prodByName(selectedName)?.label || (selectedName||'');
+  const inner = label ? esc(label) : '<span class="prod-placeholder">タップして選択</span>';
+  return `<div class="prod-wrap" id="pw-${rowId}">
+    <div class="prod-input" id="pi-${rowId}" tabindex="0" role="button"
+      onclick="openProd('${rowId}')" onkeydown="prodKeydown(event,'${rowId}')">${inner}</div>
+    <div class="prod-dropdown" id="pd-${rowId}">
+      <input class="prod-search" id="ps-${rowId}" placeholder="絞り込み検索..."
+        oninput="filterProd('${rowId}')" onkeydown="prodSearchKey(event,'${rowId}')">
+      <div id="pl-${rowId}"></div>
+    </div>
+  </div>`;
+}
+
+function openProd(rowId) {
+  closeProdAll(rowId);
+  const dd = document.getElementById('pd-'+rowId);
+  const inp = document.getElementById('pi-'+rowId);
+  dd.classList.add('open');
+  const rect = inp.getBoundingClientRect();
+  const top = (window.innerHeight - rect.bottom > 310) ? rect.bottom : rect.top - 310;
+  dd.style.top  = top + 'px';
+  dd.style.left = Math.max(8, Math.min(rect.left, window.innerWidth - 430)) + 'px';
+  filterProd(rowId);
+  setTimeout(() => document.getElementById('ps-'+rowId)?.focus(), 80);
+}
+
+function closeProdAll(except) {
+  document.querySelectorAll('.prod-dropdown.open').forEach(el => { if (!except || el.id !== 'pd-'+except) el.classList.remove('open'); });
+}
+
+function filterProd(rowId) {
+  const q    = (document.getElementById('ps-'+rowId)?.value||'').toLowerCase();
+  const list = document.getElementById('pl-'+rowId);
+  const available = getAvailableProducts(storeTab);
+  const matched = q ? available.filter(p => p.label.toLowerCase().includes(q)||p.name.toLowerCase().includes(q)) : available;
+  if (!matched.length) { list.innerHTML = '<div class="prod-option no-result">該当なし</div>'; return; }
+
+  const VENDOR_LABELS = Object.fromEntries(VENDOR_CONFIG.map(v => [v.key, v.label]));
+  const VENDOR_ORDER  = VENDOR_CONFIG.map(v => v.key);
+  const usedProducts = new Set(storeRows.filter(r => r.id !== rowId && r.product).map(r => r.product));
+  const optHTML = p => {
+    const inUse = usedProducts.has(p.name);
+    return `<div class="prod-option${inUse ? ' prod-in-use' : ''}" data-name="${esc(p.name)}" data-label="${esc(p.label)}"
+      ${inUse ? '' : `onclick="selectProd('${rowId}','${esc(p.name)}','${esc(p.label)}')" onmouseenter="focusProdOpt(this)"`}>
+      ${esc(p.label)}
+      ${inUse ? '<span style="font-size:10px;background:#94a3b8;color:white;border-radius:3px;padding:1px 5px;margin-left:5px">依頼中</span>' : ''}
+      ${!inUse && p.caseOnly ? '<span style="font-size:10px;background:#ef4444;color:white;border-radius:3px;padding:1px 5px;margin-left:5px">ケース注文のみ</span>' : ''}
+      <span style="font-size:11px;color:#888;margin-left:6px">${p.caseOnly ? 'ケース（'+esc(p.caseUnit)+')' : (esc(p.unit)+(p.caseUnit?' / '+esc(p.caseUnit):''))}</span>
+    </div>`;
+  };
+
+  let html = '';
+  VENDOR_ORDER.forEach(vendor => {
+    const items = matched.filter(p => p.vendor === vendor);
+    if (!items.length) return;
+    html += `<div class="prod-group-header">${VENDOR_LABELS[vendor]}</div>`;
+    html += items.map(optHTML).join('');
+  });
+  list.innerHTML = html;
+}
+
+function focusProdOpt(el) {
+  el.closest('.prod-dropdown')?.querySelectorAll('.prod-option').forEach(o=>o.classList.remove('focused'));
+  el.classList.add('focused');
+}
+
+function selectProd(rowId, name, label) {
+  const duplicate = storeRows.find(r => r.id !== rowId && r.product === name);
+  if (duplicate) return;
+  const el = document.getElementById('pi-'+rowId);
+  if (el) el.innerHTML = label ? esc(label) : '<span class="prod-placeholder">タップして選択</span>';
+  document.getElementById('pd-'+rowId).classList.remove('open');
+  updStore(rowId, 'product', name);
+}
+
+function prodKeydown(e, rowId) { if (e.key==='Enter'||e.key===' ') { e.preventDefault(); openProd(rowId); } }
+
+function prodSearchKey(e, rowId) {
+  const list = document.getElementById('pl-'+rowId);
+  const opts = [...list.querySelectorAll('.prod-option:not(.no-result)')];
+  const cur  = list.querySelector('.prod-option.focused');
+  if (e.key==='ArrowDown') {
+    e.preventDefault();
+    const n = cur ? (opts[opts.indexOf(cur)+1]||opts[0]) : opts[0];
+    opts.forEach(o=>o.classList.remove('focused')); n?.classList.add('focused'); n?.scrollIntoView({block:'nearest'});
+  } else if (e.key==='ArrowUp') {
+    e.preventDefault();
+    const p = cur ? (opts[opts.indexOf(cur)-1]||opts[opts.length-1]) : opts[opts.length-1];
+    opts.forEach(o=>o.classList.remove('focused')); p?.classList.add('focused'); p?.scrollIntoView({block:'nearest'});
+  } else if (e.key==='Enter') {
+    e.preventDefault();
+    const f = list.querySelector('.prod-option.focused');
+    if (f) selectProd(rowId, f.dataset.name, f.dataset.label);
+  } else if (e.key==='Escape') {
+    document.getElementById('pd-'+rowId).classList.remove('open');
+  }
+}
+
+document.addEventListener('click', e => {
+  touchActivity();
+  if (!e.target.closest('.prod-wrap')) closeProdAll();
+  if (!e.target.closest('#store-nav-search')) document.getElementById('store-search-dd')?.classList.remove('open');
+  if (!e.target.closest('.admin-menu-wrap')) document.getElementById('admin-menu-dd')?.classList.remove('open');
+  if (!e.target.closest('#site-store-search') && !e.target.closest('#site-store-dd')) {
+    const dd = document.getElementById('site-store-dd');
+    if (dd) dd.style.display = 'none';
+  }
+});
+document.addEventListener('touchstart', e => {
+  touchActivity();
+  if (!e.target.closest('.prod-wrap')) closeProdAll();
+  if (!e.target.closest('#store-nav-search')) document.getElementById('store-search-dd')?.classList.remove('open');
+  if (!e.target.closest('.admin-menu-wrap')) document.getElementById('admin-menu-dd')?.classList.remove('open');
+  if (!e.target.closest('#site-store-search') && !e.target.closest('#site-store-dd')) {
+    const dd = document.getElementById('site-store-dd');
+    if (dd) dd.style.display = 'none';
+  }
+}, {passive:true});
+document.addEventListener('keydown', touchActivity);
+
+/* ===== 店舗ページ ===== */
+function switchStore(id) {
+  storeTab = id;
+  const lbl = document.getElementById('active-store-label');
+  if (lbl) lbl.textContent = STORES[id] || id;
+  storeRows = loadA(id);
+  if (!storeRows.length) { storeRows.push(newRow(null, null)); saveA(id, storeRows); }
+  renderStore();
+}
+
+function filterStoreTabs() { openStoreDD(); }
+
+function openStoreDD() {
+  const q = (document.getElementById('store-filter')?.value||'').toLowerCase();
+  const dd = document.getElementById('store-search-dd');
+  const matched = Object.entries(STORES).filter(([,name]) => !q||name.toLowerCase().includes(q));
+  dd.innerHTML = matched.length ? matched.map(([id,name]) => `<div class="store-dd-item" onclick="selectStoreFromDD('${id}')">${esc(name)}</div>`).join('') : '<div class="store-dd-item no-result">該当なし</div>';
+  dd.classList.add('open');
+}
+
+function selectStoreFromDD(id) {
+  document.getElementById('store-filter').value = STORES[id];
+  document.getElementById('store-search-dd').classList.remove('open');
+  switchStore(id);
+}
+
+function newRow(groupId, requestDate) {
+  const gid = groupId || uid();
+  return { id:uid(), groupId:gid, requestDate:requestDate||today(), orderDate:'', deliveryDate:'', product:'', qty:'', note:'', isNew:false, denied:false, imageUrl:null };
+}
+
+function buildStoreGroups(rows) {
+  const map = new Map();
+  rows.forEach(r => {
+    const key = r.groupId || r.id;
+    if (!map.has(key)) map.set(key, []);
+    map.get(key).push(r);
+  });
+  return [...map.values()].sort((a,b) => (a[0].requestDate||'').localeCompare(b[0].requestDate||''));
+}
+
+function renderStore() {
+  const isMobile = window.innerWidth < 640;
+  const table = document.getElementById('store-table');
+  isMobile ? table.classList.add('card-mode') : table.classList.remove('card-mode');
+
+  document.getElementById('store-thead').innerHTML = `<tr>
+    <th class="c-req">依頼日</th><th class="c-order">発注日</th>
+    <th class="c-delivery">納品予定日</th><th class="c-product">商品名</th>
+    <th class="c-qty">数量</th><th class="c-note">備考</th>
+    <th class="c-action">操作</th></tr>`;
+
+  const tbody = document.getElementById('store-tbody');
+  tbody.innerHTML = '';
+  if (!storeRows.length) {
+    tbody.innerHTML = '<tr><td colspan="7" class="empty-msg">未依頼の発注はありません</td></tr>';
+    document.getElementById('store-summary').innerHTML = `【${STORES[storeTab]}】`;
+    updateBadges(); return;
+  }
+
+  const allGroups   = buildStoreGroups(storeRows);
+  const lockedCount = allGroups.filter(g => g[0].locked).length;
+  const groups      = allGroups.filter(g => !g[0].locked);
+
+  const badge = document.getElementById('history-badge');
+  if (badge) { badge.textContent = lockedCount; badge.style.display = lockedCount > 0 ? '' : 'none'; }
+
+  if (!groups.length) {
+    tbody.innerHTML = '<tr><td colspan="7" class="empty-msg">未依頼の発注はありません</td></tr>';
+    document.getElementById('store-summary').innerHTML = `【${STORES[storeTab]}】`;
+    updateBadges();
+    if (_historyOpen) renderOrderHistory();
+    return;
+  }
+
+  groups.forEach((group, gi) => {
+    const gid      = group[0].groupId || group[0].id;
+    const N        = group.length;
+    const isLocked = !!group[0].locked;
+
+    group.forEach((row, i) => {
+      const tr = document.createElement('tr');
+      if (isLocked) tr.classList.add('locked-row');
+      else if (overdue(row.deliveryDate)) tr.classList.add('overdue');
+      if (i === 0) tr.classList.add('group-first');
+
+      const pLabel = prodByName(row.product)?.label || row.product || '';
+
+      const productCell = isLocked
+        ? `<td class="c-product" data-label="商品名" style="font-size:13px">${pLabel ? esc(pLabel) : '<span style="color:#bbb">未選択</span>'}</td>`
+        : `<td class="c-product" data-label="商品名">${productSearchHTML(row.id, row.product)}</td>`;
+
+      const qtyCell = isLocked
+        ? `<td class="c-qty" data-label="数量"><span style="font-size:13px">${esc(row.qty)||'—'}</span> <span class="unit-label">${esc(unitLabelText(row.product))}</span></td>`
+        : `<td class="c-qty" data-label="数量"><div class="qty-wrap">
+            <button class="qty-btn" onclick="stepQty('${row.id}',-1)">－</button>
+            <input type="number" min="0" id="qty-${row.id}" ${row.qty !== null && row.qty !== '' ? `value="${esc(row.qty)}"` : ''} onchange="updStore('${row.id}','qty',this.value)">
+            <button class="qty-btn" onclick="stepQty('${row.id}',1)">＋</button>
+            <span class="unit-label" id="unit-${row.id}">${esc(unitLabelText(row.product))}</span>
+          </div></td>`;
+
+      const noteCell = isLocked
+        ? `<td class="c-note" data-label="備考" style="font-size:13px;color:#555;white-space:pre-wrap">${esc(row.note)}</td>`
+        : `<td class="c-note" data-label="備考"><textarea placeholder="備考" oninput="autoGrow(this)" onchange="updStore('${row.id}','note',this.value)">${esc(row.note)}</textarea></td>`;
+
+      const hasOrderDate = !!row.orderDate;
+      const actionCell = `<td class="c-action">
+        <button class="btn-done" onclick="markDelivered('${row.id}')"
+          ${!hasOrderDate ? 'disabled title="発注日が記載されてから押せます"' : ''}
+          style="${!hasOrderDate ? 'opacity:0.4;cursor:not-allowed;' : ''}">納品済み</button>
+        ${isLocked ? '' : `<button class="btn-del" onclick="delRow('${row.id}')">削除</button>`}
+      </td>`;
+
+      // スマホ: 全行に依頼日を表示（rowspanなし）、PC: 1行目のみrowspan
+      const showReq = (i === 0) || isMobile;
+      const rowspanAttr = (!isMobile && i === 0) ? ` rowspan="${N}"` : '';
+      const reqCell = showReq ? (isLocked
+        ? `<td class="c-req" data-label="依頼日"${rowspanAttr} style="vertical-align:middle;font-size:13px;font-weight:600;text-align:center">${esc(row.requestDate)}</td>`
+        : `<td class="c-req" data-label="依頼日"${rowspanAttr} style="vertical-align:middle">
+            <input type="date" value="${esc(row.requestDate)}" onchange="updStoreGroup('${gid}',this.value)">
+          </td>`) : '';
+
+      tr.innerHTML = `
+        ${reqCell}
+        <td class="c-order" data-label="発注日">${displayCell(row.orderDate)}</td>
+        <td class="c-delivery" data-label="納品予定日">${displayCell(row.deliveryDate)}</td>
+        ${productCell}${qtyCell}${noteCell}${actionCell}`;
+      tbody.appendChild(tr);
+    });
+
+    /* グループ下部ボタン行 */
+    const addTr = document.createElement('tr');
+    if (isLocked) {
+      const isDenied    = group.some(r => r.denied);
+      const hasOrderDate = group.some(r => r.orderDate);
+      if (isDenied) {
+        addTr.innerHTML = `<td colspan="7" style="padding:5px 12px 8px;border-bottom:none;background:#fee2e2">
+          <span style="font-weight:700;color:#dc2626">✕ 否認されました。備考を確認してください。</span>
+          <button class="btn-withdraw" style="margin-left:12px" onclick="withdrawDenied('${gid}')">依頼取り下げ</button>
+        </td>`;
+      } else {
+        const cancelBtn = hasOrderDate
+          ? `<span style="font-size:12px;color:#9ca3af;margin-left:12px">発注済みのため取り消し不可</span>`
+          : `<button class="btn-cancel-lock" style="margin-left:12px" onclick="unlockGroup('${gid}')">取り消す</button>`;
+        addTr.innerHTML = `<td colspan="7" style="padding:5px 12px 8px;border-bottom:none;background:#fffde0">
+          <span class="locked-status">✓ 依頼済み</span>
+          ${cancelBtn}
+        </td>`;
+      }
+    } else {
+      const gPhoto = group[0].imageUrl;
+      addTr.innerHTML = `<td colspan="7" style="padding:4px 10px 8px;border-bottom:none">
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+          <button class="btn-add-item" onclick="addItemToGroup('${gid}','${esc(group[0].requestDate)}')">＋ 商品を追加</button>
+          <button class="btn-request" onclick="lockGroup('${gid}')">依頼する →</button>
+          <label style="cursor:pointer;font-size:12px;color:#6b7280;background:#f3f4f6;border:1px solid #d1d5db;border-radius:6px;padding:5px 10px;display:inline-flex;align-items:center;gap:4px">
+            📷 写真を添付
+            <input type="file" accept="image/*" style="display:none" onchange="handleOrderPhotoUpload('${gid}',this)">
+          </label>
+          ${gPhoto ? `<img src="${esc(gPhoto)}" style="height:44px;border-radius:5px;cursor:pointer;border:1px solid #e5e7eb" onclick="showLostImage(this.src)" title="写真を拡大">
+            <button onclick="removeOrderPhoto('${gid}')" style="font-size:11px;color:#9ca3af;background:none;border:none;cursor:pointer;padding:2px 4px" title="写真を削除">✕</button>` : ''}
+        </div>
+      </td>`;
+    }
+    tbody.appendChild(addTr);
+
+    if (gi < groups.length - 1) {
+      const sep = document.createElement('tr');
+      sep.className = 'group-sep';
+      sep.innerHTML = '<td colspan="7"></td>';
+      tbody.appendChild(sep);
+    }
+  });
+
+  document.getElementById('store-summary').innerHTML = `【${STORES[storeTab]}】未依頼 ${groups.length} グループ`;
+  tbody.querySelectorAll('textarea').forEach(autoGrow);
+  updateBadges();
+  if (_historyOpen) renderOrderHistory();
+}
+
+function autoGrow(el) {
+  el.style.height = 'auto';
+  el.style.height = el.scrollHeight + 'px';
+}
+
+let _historyOpen = false;
+function toggleOrderHistory() {
+  _historyOpen = !_historyOpen;
+  const panel     = document.getElementById('order-history-panel');
+  const mainWrap  = document.getElementById('store-table-wrap');
+  const btn       = document.getElementById('btn-history');
+  if (!panel || !mainWrap) return;
+  mainWrap.style.display  = _historyOpen ? 'none' : '';
+  panel.style.display     = _historyOpen ? '' : 'none';
+  btn?.classList.toggle('active', _historyOpen);
+  if (btn) {
+    const badge = document.getElementById('history-badge');
+    btn.textContent = _historyOpen ? '依頼済み履歴 ' : '発注依頼 ';
+    if (badge) btn.appendChild(badge);
+  }
+  if (_historyOpen) renderOrderHistory();
+}
+
+function renderOrderHistory() {
+  const isMobile = window.innerWidth < 640;
+  const table = document.getElementById('history-table');
+  if (!table) return;
+  isMobile ? table.classList.add('card-mode') : table.classList.remove('card-mode');
+
+  document.getElementById('history-thead').innerHTML = `<tr>
+    <th class="c-req">依頼日</th><th class="c-order">発注日</th>
+    <th class="c-delivery">納品予定日</th><th class="c-product">商品名</th>
+    <th class="c-qty">数量</th><th class="c-note">備考</th>
+    <th class="c-action">操作</th></tr>`;
+
+  const tbody = document.getElementById('history-tbody');
+  tbody.innerHTML = '';
+
+  const groups = buildStoreGroups(storeRows).filter(g => g[0].locked);
+  if (!groups.length) {
+    tbody.innerHTML = '<tr><td colspan="7" class="empty-msg">依頼済みの発注はありません</td></tr>';
+    return;
+  }
+
+  groups.forEach((group, gi) => {
+    const gid = group[0].groupId || group[0].id;
+    const N   = group.length;
+    const isDenied    = group.some(r => r.denied);
+    const hasOrderDate = group.some(r => r.orderDate);
+    const gPhoto = group[0].imageUrl;
+    const photoHtml = gPhoto
+      ? `<img src="${esc(gPhoto)}" style="height:36px;border-radius:5px;cursor:pointer;border:1px solid #e5e7eb;margin-left:6px;vertical-align:middle" onclick="showLostImage(this.src)" title="写真を拡大">`
+      : '';
+
+    let statusHtml, actionBtn;
+    const isOrdered = !group[0].isNew;
+    if (isDenied) {
+      statusHtml = `<span style="font-weight:700;color:#dc2626;font-size:13px">✕ 否認されました。備考を確認してください。</span>${photoHtml}`;
+      actionBtn  = `<button class="btn-withdraw" onclick="withdrawDenied('${gid}')">依頼取り下げ</button>`;
+    } else if (isOrdered) {
+      statusHtml = `<span class="locked-status">✓ 依頼済み</span>${photoHtml}`;
+      actionBtn  = `<button class="btn-done" onclick="markGroupDelivered('${esc(gid)}')"
+          ${!hasOrderDate ? 'disabled title="発注日が記載されてから押せます" style="opacity:0.4;cursor:not-allowed"' : ''}>納品済み</button>`;
+    } else {
+      statusHtml = `<span class="locked-status" style="color:#d97706">⌛ 確認中</span>${photoHtml}`;
+      actionBtn  = `<button class="btn-cancel-lock" onclick="unlockGroup('${gid}')">取り消す</button>`;
+    }
+    const doneBtn = actionBtn;
+
+    group.forEach((row, i) => {
+      const tr = document.createElement('tr');
+      tr.classList.add('locked-row');
+      if (i === 0) tr.classList.add('group-first');
+
+      const pLabel = prodByName(row.product)?.label || row.product || '';
+      const showReq = (i === 0) || isMobile;
+      const rowspanAttr = (!isMobile && i === 0) ? ` rowspan="${N}"` : '';
+      const reqCell = showReq
+        ? `<td class="c-req" data-label="依頼日"${rowspanAttr} style="vertical-align:middle;font-size:13px;font-weight:600;text-align:center">${esc(row.requestDate)}</td>`
+        : '';
+
+      // c-action: 最初の行のみ（rowspan=N）にステータス＋納品済みを横並びで表示
+      let actionCell = '';
+      if (i === 0) {
+        const actionRowspan = !isMobile ? ` rowspan="${N}"` : '';
+        actionCell = `<td class="c-action"${actionRowspan} style="vertical-align:middle">
+          <div class="action-wrap">
+            <div>${statusHtml}</div>
+            ${doneBtn}
+          </div>
+        </td>`;
+      }
+
+      tr.innerHTML = `
+        ${reqCell}
+        <td class="c-order" data-label="発注日">${displayCell(row.orderDate)}</td>
+        <td class="c-delivery" data-label="納品予定日">${displayCell(row.deliveryDate)}</td>
+        <td class="c-product" data-label="商品名" style="font-size:13px">${pLabel ? esc(pLabel) : '<span style="color:#bbb">未選択</span>'}</td>
+        <td class="c-qty" data-label="数量"><span style="font-size:13px">${esc(row.qty)||'—'}</span> <span class="unit-label">${esc(unitLabelText(row.product))}</span></td>
+        <td class="c-note" data-label="備考" style="font-size:13px;color:#555;white-space:pre-wrap">${esc(row.note)}</td>
+        ${actionCell}`;
+      tbody.appendChild(tr);
+    });
+
+    if (gi < groups.length - 1) {
+      const sep = document.createElement('tr');
+      sep.className = 'group-sep';
+      sep.innerHTML = '<td colspan="7"></td>';
+      tbody.appendChild(sep);
+    }
+  });
+}
+
+function stepQty(id, delta) {
+  const inp = document.getElementById('qty-' + id);
+  if (!inp) return;
+  const val = parseInt(inp.value) || 0;
+  const newVal = Math.max(0, val + delta);
+  inp.value = newVal;
+  updStore(id, 'qty', newVal);
+}
+
+/* 依頼日変更時：同グループ全行の requestDate を更新 */
+function updStoreGroup(groupId, newDate) {
+  storeRows.filter(r => (r.groupId||r.id) === groupId).forEach(r => r.requestDate = newDate);
+  saveA(storeTab, storeRows);
+  renderStore();
+}
+
+/* 既存グループに商品を追加 */
+function addItemToGroup(groupId, requestDate) {
+  storeRows.push(newRow(groupId, requestDate));
+  saveA(storeTab, storeRows);
+  renderStore();
+}
+
+function lockGroup(groupId) {
+  const group = storeRows.filter(r => (r.groupId||r.id) === groupId);
+  if (group.some(r => !r.requestDate)) { alert('依頼日を入力してください。'); return; }
+  group.forEach(r => { r.locked = true; r.isNew = true; });
+  saveA(storeTab, storeRows);
+  renderStore();
+}
+
+function unlockGroup(groupId) {
+  storeRows.filter(r=>(r.groupId||r.id)===groupId).forEach(r => { r.locked=false; r.isNew=false; });
+  saveA(storeTab, storeRows);
+  renderStore();
+}
+
+/* 新規グループ（発注依頼）を追加 */
+function addRow() {
+  if (_historyOpen) toggleOrderHistory();
+  try {
+    storeRows.push(newRow());
+    saveA(storeTab, storeRows);
+    renderStore();
+  } catch(e) {
+    console.error('addRow error:', e);
+    alert('エラーが発生しました: ' + e.message);
+  }
+}
+function delRow(id) { storeRows = storeRows.filter(r=>r.id!==id); saveA(storeTab, storeRows); renderStore(); }
+
+function updStore(id, field, value) {
+  const row = storeRows.find(r=>r.id===id); if (!row) return;
+  row[field] = value;
+  if (field==='product') {
+    const el = document.getElementById('unit-'+id);
+    if (el) el.textContent = unitLabelText(value);
+  }
+  saveA(storeTab, storeRows);
+}
+
+function markDelivered(id) {
+  const row = storeRows.find(r=>r.id===id); if (!row) return;
+  if (!row.orderDate) { alert('発注日が記載されてから納品済みにできます。'); return; }
+  if (!confirm('この依頼を納品済みにして履歴へ移動しますか？')) return;
+  saveH(storeTab, [...loadH(storeTab), {...row, deliveredAt:Date.now()}]);
+  storeRows = storeRows.filter(r=>r.id!==id);
+  saveA(storeTab, storeRows);
+  renderStore();
+}
+
+function markGroupDelivered(gid) {
+  const group = storeRows.filter(r => (r.groupId||r.id) === gid);
+  if (!group.length) return;
+  if (!group.some(r => r.orderDate)) { alert('発注日が記載されてから納品済みにできます。'); return; }
+  if (!confirm('この依頼を納品済みにして履歴へ移動しますか？')) return;
+  const hist = loadH(storeTab);
+  const now = Date.now();
+  group.forEach(r => hist.push({...r, deliveredAt: now}));
+  saveH(storeTab, hist);
+  storeRows = storeRows.filter(r => (r.groupId||r.id) !== gid);
+  saveA(storeTab, storeRows);
+  renderStore();
+}
+
+/* ===== 全体管理ページ ===== */
+function toggleAdminMenu() {
+  const dd = document.getElementById('admin-menu-dd');
+  dd.classList.toggle('open');
+  if (dd.classList.contains('open')) updateAdminMenuActive();
+}
+
+function updateAdminMenuActive() {
+  ['kanto','kansai','tokai'].forEach(r => document.getElementById('menu-'+r)?.classList.toggle('active', r===adminRegion));
+  ['overview','history','lost','settings'].forEach(v => document.getElementById('menu-'+v)?.classList.toggle('active', v===adminView));
+  document.getElementById('admin-settings-btn')?.classList.toggle('active', adminView==='settings');
+}
+
+function menuSelect(type, val) {
+  document.getElementById('admin-menu-dd').classList.remove('open');
+  if (type==='region') switchRegion(val); else switchAdminView(val);
+}
+
+function switchRegion(r) {
+  adminRegion = r; adminPage = 1;
+  ['kanto','kansai','tokai'].forEach(k => document.getElementById('sub-'+k)?.classList.toggle('active', k===r));
+  updateAdminMenuActive();
+  renderAdmin();
+}
+
+function switchAdminView(v) {
+  adminView = v; adminPage = 1;
+  ['overview','history','lost'].forEach(k => document.getElementById('sub-'+k)?.classList.toggle('active', k===v));
+  updateAdminMenuActive();
+  renderAdmin();
+}
+
+function renderAdmin() {
+  if      (adminView==='overview') renderOverview();
+  else if (adminView==='history')  renderHistory();
+  else if (adminView==='lost')     renderLostAdmin();
+  else                             renderSettings();
+}
+
+let adminLostStore = '';
+
+async function renderLostAdmin() {
+  document.querySelector('#page-admin .table-wrap').style.display = 'none';
+  document.getElementById('pagination').style.display = 'none';
+  document.getElementById('admin-thead').innerHTML = '';
+  document.getElementById('admin-tbody').innerHTML = '';
+  document.getElementById('admin-summary').innerHTML = '';
+
+  const container = document.getElementById('settings-container');
+  container.style.display = 'block';
+
+  if (!adminLostStore || !STORES[adminLostStore]) {
+    adminLostStore = Object.keys(STORES)[0] || '';
+  }
+
+  const storeOptions = Object.entries(STORES).map(([sid, sname]) =>
+    `<option value="${esc(sid)}" ${sid === adminLostStore ? 'selected' : ''}>${esc(sname)}</option>`
+  ).join('');
+
+  container.innerHTML = `<div style="color:#aaa;font-size:13px;padding:10px 0">読み込み中…</div>`;
+
+  // 月内全店舗 + 選択店舗を並列取得
+  const thisMonth = new Date().toISOString().slice(0, 7);
+  const [monthData] = await Promise.all([
+    gasGet('getLostItems', { month: thisMonth }),
+    loadLostItemsFromDb(adminLostStore),
+  ]);
+  const monthAllItems = (monthData || []).map(r => ({
+    id: r.id, storeId: r.store_id, storeName: STORES[r.store_id] || r.store_id,
+    foundDate: r.found_date || '', note: r.note || '',
+    imageUrl: r.image_url || null, addedAt: r.added_at || 0,
+  })).sort((a,b) => (b.foundDate||'').localeCompare(a.foundDate||''));
+
+  const monthRows = monthAllItems.length ? monthAllItems.map(item => `
+    <tr style="border-bottom:1px solid #eee">
+      <td style="font-size:13px;padding:7px 10px;white-space:nowrap">${esc(item.foundDate)||'—'}</td>
+      <td style="font-size:13px;padding:7px 10px;white-space:nowrap;color:#22703d;font-weight:600">${esc(item.storeName)}</td>
+      <td style="font-size:13px;padding:7px 10px;word-break:break-all">${esc(item.note)}</td>
+      <td style="padding:5px 8px">
+        ${item.imageUrl
+          ? `<img src="${esc(item.imageUrl)}" onclick="showLostImage(this.src)"
+              style="width:48px;height:48px;object-fit:cover;border-radius:5px;border:1px solid #ddd;cursor:zoom-in">`
+          : '<span style="color:#ccc;font-size:11px">なし</span>'}
+      </td>
+      <td style="padding:5px 8px;white-space:nowrap">
+        <button onclick="deleteLostItem('${esc(item.storeId)}','${item.id}')"
+          style="background:#ef4444;color:white;border:none;border-radius:5px;padding:4px 10px;font-size:12px;cursor:pointer;font-family:inherit">削除</button>
+      </td>
+    </tr>`).join('')
+    : `<tr><td colspan="5" style="color:#aaa;font-size:13px;padding:14px 10px">今月の忘れ物はありません</td></tr>`;
+
+  const items = getLostItems(adminLostStore).slice().sort((a,b) => (b.addedAt||0)-(a.addedAt||0));
+  const rows = items.length ? items.map(item => `
+    <tr>
+      <td style="font-size:13px;padding:7px 10px;white-space:nowrap">${esc(item.foundDate)||'—'}</td>
+      <td style="font-size:13px;padding:7px 10px;word-break:break-all">${esc(item.note)}</td>
+      <td style="padding:5px 8px">
+        ${item.imageUrl
+          ? `<img src="${esc(item.imageUrl)}" onclick="showLostImage(this.src)"
+              style="width:52px;height:52px;object-fit:cover;border-radius:5px;border:1px solid #ddd;cursor:zoom-in">`
+          : '<span style="color:#ccc;font-size:11px">なし</span>'}
+      </td>
+      <td style="padding:5px 8px;white-space:nowrap">
+        <button onclick="deleteLostItem('${esc(adminLostStore)}','${item.id}')"
+          style="background:#ef4444;color:white;border:none;border-radius:5px;padding:4px 10px;font-size:12px;cursor:pointer;font-family:inherit">削除</button>
+      </td>
+    </tr>`).join('')
+    : `<tr><td colspan="4" style="color:#aaa;font-size:13px;padding:16px 10px">登録された忘れ物はありません</td></tr>`;
+
+  container.innerHTML = `
+    <!-- 月内の忘れ物（全店舗） -->
+    <div class="settings-card" style="margin-bottom:16px;padding:0;overflow:hidden">
+      <div class="settings-accordion-hdr" onclick="toggleAdminLostMonth()" style="cursor:pointer">
+        <span>月内の忘れ物（全店舗・${thisMonth}）<span id="admin-lost-month-count" style="font-size:12px;color:#888;margin-left:6px">${monthAllItems.length}件</span></span>
+        <span id="admin-lost-month-arrow" style="font-size:12px;color:#888">▶ タップして開く</span>
+      </div>
+      <div id="admin-lost-month-body" style="display:none;padding:0 12px 12px;overflow-x:auto">
+        <table style="width:100%;border-collapse:collapse;background:white;border-radius:8px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,.08)">
+          <thead><tr style="background:#c2d63a;color:#1a2a05">
+            <th style="text-align:left;font-size:13px;padding:9px 10px;width:100px">発見日</th>
+            <th style="text-align:left;font-size:13px;padding:9px 10px;width:130px">店舗</th>
+            <th style="text-align:left;font-size:13px;padding:9px 10px">備考</th>
+            <th style="font-size:13px;padding:9px 10px;width:64px">画像</th>
+            <th style="width:70px"></th>
+          </tr></thead>
+          <tbody>${monthRows}</tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- 店舗別一覧 -->
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;flex-wrap:wrap">
+      <div style="font-weight:700;font-size:15px;color:#22703d">店舗別一覧</div>
+      <select onchange="adminLostStore=this.value;renderLostAdmin()"
+        style="border:1px solid #ddd;border-radius:6px;padding:7px 12px;font-size:14px;font-family:inherit;min-width:160px">
+        ${storeOptions}
+      </select>
+    </div>
+    <table style="width:100%;border-collapse:collapse;background:white;border-radius:8px;overflow:hidden;box-shadow:0 2px 8px rgba(34,112,61,.1)">
+      <thead><tr style="background:#c2d63a;color:#1a2a05">
+        <th style="text-align:left;font-size:13px;padding:9px 10px;width:110px">発見日</th>
+        <th style="text-align:left;font-size:13px;padding:9px 10px">備考</th>
+        <th style="font-size:13px;padding:9px 10px;width:70px">画像</th>
+        <th style="width:70px"></th>
+      </tr></thead>
+      <tbody>${rows}</tbody>
+    </table>`;
+}
+
+function toggleAdminLostMonth() {
+  const body  = document.getElementById('admin-lost-month-body');
+  const arrow = document.getElementById('admin-lost-month-arrow');
+  if (!body) return;
+  const open = body.style.display === 'none';
+  body.style.display = open ? 'block' : 'none';
+  if (arrow) arrow.textContent = open ? '▼ 閉じる' : '▶ タップして開く';
+}
+
+/* 依頼日×店舗でグループ化 */
+function buildGroups(allRows) {
+  const map = new Map();
+  allRows.forEach(r => {
+    const key = r._sid + '|' + (r.requestDate||'');
+    if (!map.has(key)) map.set(key, []);
+    map.get(key).push(r);
+  });
+  const groups = [...map.values()];
+  groups.sort((a,b) => {
+    const an = a.some(r=>r.isNew), bn = b.some(r=>r.isNew);
+    if (an !== bn) return an ? -1 : 1;
+    return (b[0].requestDate||'').localeCompare(a[0].requestDate||'');
+  });
+  return groups;
+}
+
+function showAdminTable() {
+  document.querySelector('#page-admin .table-wrap').style.display = '';
+  document.getElementById('settings-container').style.display = 'none';
+}
+
+let adminOverviewOpen = new Set();
+let adminOverviewDropdownStore = '';
+
+function renderOverview() {
+  document.querySelector('#page-admin .table-wrap').style.display = 'none';
+  document.getElementById('pagination').style.display = 'none';
+  document.getElementById('admin-thead').innerHTML = '';
+  document.getElementById('admin-tbody').innerHTML = '';
+
+  const container = document.getElementById('settings-container');
+  container.style.display = 'block';
+
+  const region = REGIONS[adminRegion];
+
+  const storeData = region.stores.map(sid => {
+    const rows = loadA(sid).filter(r => r.locked);
+    const groups = buildGroups(rows.map(r => ({...r, _sid:sid, _sname:STORES[sid]||sid})));
+    const hasNew = rows.some(r => r.isNew && !r.denied);
+    const newCnt = new Set(rows.filter(r => r.isNew && !r.denied).map(r => r.groupId||r.id)).size;
+    return { sid, sname: STORES[sid]||sid, groups, hasNew, newCnt };
+  });
+
+  const totalGroups = storeData.reduce((n, s) => n + s.groups.length, 0);
+  const totalNew    = storeData.reduce((n, s) => n + s.newCnt, 0);
+  let summary = `【${region.label}】${totalGroups} 件`;
+  if (totalNew > 0) summary += ` ／ <span style="color:#b8860b;font-weight:bold">新着 ${totalNew} 件</span>`;
+  document.getElementById('admin-summary').innerHTML = summary;
+
+  const newStores   = storeData.filter(s => s.hasNew);
+  const otherStores = storeData.filter(s => !s.hasNew);
+
+  // プルダウンのデフォルト店舗
+  if (!adminOverviewDropdownStore || !STORES[adminOverviewDropdownStore]) {
+    adminOverviewDropdownStore = otherStores[0]?.sid || '';
+  }
+
+  // 新着カード
+  const newCards = newStores.map(({sid, sname, groups, newCnt}) => {
+    const isOpen  = adminOverviewOpen.has(sid);
+    const badge   = `<span style="background:#ef4444;color:white;font-size:11px;font-weight:700;border-radius:99px;padding:2px 10px;margin-left:8px">${newCnt}件 NEW</span>`;
+    const detail  = isOpen && groups.length ? buildStoreOrderDetail(sid, groups) : '';
+    return `
+      <div class="settings-card" style="margin-bottom:10px;padding:0;overflow:hidden">
+        <button type="button" onclick="toggleOverviewStore('${esc(sid)}')"
+          style="width:100%;display:flex;justify-content:space-between;align-items:center;padding:14px 16px;background:#fffde0;cursor:pointer;user-select:none;min-height:48px;gap:8px;border:none;font-family:inherit;text-align:left">
+          <span style="display:flex;align-items:center;flex-wrap:wrap;gap:4px;font-weight:700;font-size:14px">${esc(sname)}${badge}</span>
+          <span id="ovhdr-${esc(sid)}" style="font-size:13px;color:#888;white-space:nowrap;flex-shrink:0">${isOpen ? '▼ 閉じる' : '▶ 開く'}</span>
+        </button>
+        <div id="store-detail-${esc(sid)}" style="${isOpen ? '' : 'display:none'}">${detail}</div>
+      </div>`;
+  }).join('');
+
+  // プルダウン：全店舗対象（新着有りも含む）
+  // 存在しない店舗が選択されていたらリセット（未選択=''はそのまま保持）
+  if (adminOverviewDropdownStore && !STORES[adminOverviewDropdownStore]) {
+    adminOverviewDropdownStore = '';
+  }
+  const ddStore  = adminOverviewDropdownStore
+    ? storeData.find(s => s.sid === adminOverviewDropdownStore)
+    : null;
+  const ddDetail = !adminOverviewDropdownStore
+    ? ''
+    : ddStore?.groups.length
+      ? buildStoreOrderDetail(ddStore.sid, ddStore.groups)
+      : `<div style="color:#aaa;font-size:13px;padding:12px 0">依頼はありません</div>`;
+
+  const ddOptions =
+    `<option value="" ${!adminOverviewDropdownStore ? 'selected' : ''}>――――</option>` +
+    storeData.map(({sid, sname, groups}) =>
+      `<option value="${esc(sid)}" ${sid === adminOverviewDropdownStore ? 'selected' : ''}>${esc(sname)}（${groups.length}件）</option>`
+    ).join('');
+
+  container.innerHTML = `
+    ${newStores.length
+      ? `<div style="font-size:12px;font-weight:700;color:#b45309;margin-bottom:8px;letter-spacing:.5px">新着依頼</div>${newCards}`
+      : `<div style="color:#aaa;font-size:13px;padding:8px 0;margin-bottom:12px">新着依頼はありません</div>`}
+    <div style="font-size:12px;font-weight:700;color:#555;margin:18px 0 10px;letter-spacing:.5px">店舗別に確認</div>
+    <div style="display:flex;gap:8px;align-items:center;margin-bottom:12px;flex-wrap:wrap">
+      <select onchange="adminOverviewDropdownStore=this.value;renderOverview()"
+        style="border:1px solid #ddd;border-radius:6px;padding:8px 12px;font-size:14px;font-family:inherit;min-width:180px">
+        ${ddOptions}
+      </select>
+    </div>
+    ${ddDetail}`;
+
+  updateBadges();
+}
+
+function toggleOverviewStore(sid) {
+  const detail = document.getElementById('store-detail-' + sid);
+  if (!detail) { renderOverview(); return; }
+
+  const isOpening = !adminOverviewOpen.has(sid);
+  if (isOpening) {
+    adminOverviewOpen.add(sid);
+    const rows   = loadA(sid).filter(r => r.locked);
+    const groups = buildGroups(rows.map(r => ({...r, _sid:sid, _sname:STORES[sid]||sid})));
+    detail.innerHTML = groups.length
+      ? buildStoreOrderDetail(sid, groups)
+      : '<div style="color:#aaa;font-size:13px;padding:12px 16px">依頼はありません</div>';
+    detail.style.display = '';
+  } else {
+    adminOverviewOpen.delete(sid);
+    detail.style.display = 'none';
+  }
+
+  const lbl = document.getElementById('ovhdr-' + sid);
+  if (lbl) lbl.textContent = isOpening ? '▼ 閉じる' : '▶ 開く';
+}
+
+function buildStoreOrderDetail(sid, groups) {
+  let rows = '';
+  groups.forEach((group, gi) => {
+    const first      = group[0];
+    const groupIsNew = group.some(r => r.isNew);
+    const reqDate    = first.requestDate;
+    const N          = group.length;
+    const isDenied   = group.some(r => r.denied);
+    const hasAllOrderDates = group.every(r => r.orderDate);
+    const msgId = `omsg-${sid}-${reqDate.replace(/-/g,'')}`;
+    const btn = isDenied
+      ? `<span style="font-size:12px;font-weight:700;color:#dc2626;background:#fee2e2;padding:4px 10px;border-radius:6px">否認済み</span>`
+      : groupIsNew
+        ? `<div>
+             <div style="display:flex;gap:4px;flex-wrap:wrap">
+               <button class="btn-confirm" onclick="confirmOrderCheck('${sid}','${esc(reqDate)}','${msgId}')">発注済み</button>
+               <button class="btn-deny" onclick="denyGroupCheck('${sid}','${esc(reqDate)}','${msgId}')"
+                 ${hasAllOrderDates ? 'style="opacity:0.4;cursor:not-allowed"' : ''}>否認</button>
+             </div>
+             <div id="${msgId}" style="font-size:11px;color:#ef4444;margin-top:4px;min-height:14px"></div>
+           </div>`
+        : `<span style="font-size:12px;font-weight:700;color:#22703d;background:#d4edde;padding:4px 10px;border-radius:6px">✓ 発注済み</span>`;
+
+    group.forEach((row, i) => {
+      const pLabel  = prodByName(row.product)?.label || row.product || '—';
+      const unitTxt = unitLabelText(row.product);
+      const cls     = groupIsNew ? 'new-req' : '';
+      const topBorder = gi > 0 && i === 0 ? 'border-top:2px solid #d1d5db;' : '';
+      const groupPhoto = first.imageUrl;
+      if (i === 0) {
+        const photoCell = groupPhoto
+          ? `<br><img src="${esc(groupPhoto)}" style="height:40px;border-radius:4px;cursor:pointer;margin-top:4px;border:1px solid #e5e7eb" onclick="showLostImage(this.src)" title="写真を拡大">`
+          : '';
+        rows += `<tr class="${cls}">
+          <td rowspan="${N}" style="vertical-align:middle;padding:8px 10px;white-space:nowrap;${topBorder}">${esc(reqDate)||'—'}${photoCell}</td>
+          <td style="padding:6px 8px;${topBorder}"><input type="date" value="${esc(row.orderDate)}" style="font-size:13px;border:1px solid #ddd;border-radius:5px;padding:4px 6px;font-family:inherit" onchange="adminUpd('${sid}','${row.id}','orderDate',this.value)"></td>
+          <td style="padding:6px 8px;${topBorder}"><input type="date" value="${esc(row.deliveryDate)}" style="font-size:13px;border:1px solid #ddd;border-radius:5px;padding:4px 6px;font-family:inherit" onchange="adminUpd('${sid}','${row.id}','deliveryDate',this.value)"></td>
+          <td style="padding:8px 10px;${topBorder}">${esc(pLabel)}</td>
+          <td style="padding:8px 10px;white-space:nowrap;${topBorder}">${esc(row.qty)||'—'} <span style="font-size:11px;color:#888">${esc(unitTxt)}</span></td>
+          <td style="padding:6px 8px;${topBorder}"><textarea style="width:100%;min-width:100px;border:1px solid #ddd;border-radius:5px;padding:4px 6px;font-size:12px;font-family:inherit;resize:vertical" placeholder="備考" onchange="adminUpd('${sid}','${row.id}','note',this.value)">${esc(row.note)}</textarea></td>
+          <td rowspan="${N}" style="vertical-align:middle;padding:8px 10px;white-space:nowrap;${topBorder}">${btn}</td>
+        </tr>`;
+      } else {
+        rows += `<tr class="${cls}">
+          <td style="padding:6px 8px"><input type="date" value="${esc(row.orderDate)}" style="font-size:13px;border:1px solid #ddd;border-radius:5px;padding:4px 6px;font-family:inherit" onchange="adminUpd('${sid}','${row.id}','orderDate',this.value)"></td>
+          <td style="padding:6px 8px"><input type="date" value="${esc(row.deliveryDate)}" style="font-size:13px;border:1px solid #ddd;border-radius:5px;padding:4px 6px;font-family:inherit" onchange="adminUpd('${sid}','${row.id}','deliveryDate',this.value)"></td>
+          <td style="padding:8px 10px;padding-left:18px;border-left:3px solid #b8d8c5">${esc(pLabel)}</td>
+          <td style="padding:8px 10px;white-space:nowrap">${esc(row.qty)||'—'} <span style="font-size:11px;color:#888">${esc(unitTxt)}</span></td>
+          <td style="padding:6px 8px"><textarea style="width:100%;min-width:100px;border:1px solid #ddd;border-radius:5px;padding:4px 6px;font-size:12px;font-family:inherit;resize:vertical" placeholder="備考" onchange="adminUpd('${sid}','${row.id}','note',this.value)">${esc(row.note)}</textarea></td>
+        </tr>`;
+      }
+      if (gi < groups.length - 1 && i === N - 1) {
+        rows += `<tr class="group-sep"><td colspan="7"></td></tr>`;
+      }
+    });
+  });
+
+  return `<div style="padding:0 12px 12px;overflow-x:auto">
+    <table style="width:100%;border-collapse:collapse;background:white;border-radius:8px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,.08)">
+      <thead><tr style="background:#c2d63a;color:#1a2a05">
+        <th style="padding:9px 10px;font-size:13px;white-space:nowrap">依頼日</th>
+        <th style="padding:9px 10px;font-size:13px;white-space:nowrap">発注日</th>
+        <th style="padding:9px 10px;font-size:13px;white-space:nowrap">納品予定日</th>
+        <th style="padding:9px 10px;font-size:13px">商品名</th>
+        <th style="padding:9px 10px;font-size:13px">数量</th>
+        <th style="padding:9px 10px;font-size:13px">備考</th>
+        <th style="padding:9px 10px;font-size:13px">発注</th>
+      </tr></thead>
+      <tbody>${rows}</tbody>
+    </table>
+  </div>`;
+}
+
+let adminHistDropdownStore = '';
+
+function buildHistTable(sid) {
+  const rows = loadH(sid);
+  if (!rows.length) return `<div style="color:#aaa;font-size:13px;padding:12px 0">履歴がありません</div>`;
+
+  const sorted = [...rows].sort((a,b) => (b.deliveredAt||0)-(a.deliveredAt||0));
+  const groups = buildGroups(sorted.map(r => ({...r, isNew:false})));
+
+  let html = `<div style="overflow-x:auto">
+  <table style="width:100%;border-collapse:collapse;font-size:13px">
+    <thead>
+      <tr style="background:#f3f4f6;font-size:12px;text-align:left">
+        <th style="padding:8px 10px">依頼日</th>
+        <th style="padding:8px 10px">発注日</th>
+        <th style="padding:8px 10px">納品予定日</th>
+        <th style="padding:8px 10px">商品名</th>
+        <th style="padding:8px 10px">数量</th>
+        <th style="padding:8px 10px;min-width:200px">備考</th>
+        <th style="padding:8px 10px">納品確認日</th>
+      </tr>
+    </thead><tbody>`;
+
+  groups.forEach((group, gi) => {
+    const first = group[0];
+    const N = group.length;
+    group.forEach((row, i) => {
+      const pLabel = prodByName(row.product)?.label || row.product || '—';
+      const unitTxt = unitLabelText(row.product);
+      const sep = gi > 0 && i === 0 ? 'border-top:2px solid #e5e7eb' : '';
+      if (i === 0) {
+        html += `<tr style="${sep}">
+          <td rowspan="${N}" style="padding:8px 10px;vertical-align:middle">${esc(first.requestDate)||'—'}</td>
+          <td rowspan="${N}" style="padding:8px 10px;vertical-align:middle">${esc(first.orderDate)||'—'}</td>
+          <td rowspan="${N}" style="padding:8px 10px;vertical-align:middle">${esc(first.deliveryDate)||'—'}</td>
+          <td style="padding:8px 10px">${esc(pLabel)}</td>
+          <td style="padding:8px 10px;white-space:nowrap">${esc(row.qty)||'—'} <span style="font-size:11px;color:#aaa">${esc(unitTxt)}</span></td>
+          <td rowspan="${N}" style="padding:8px 10px;white-space:pre-wrap;font-size:12px;vertical-align:middle;min-width:200px">${esc(first.note)}</td>
+          <td rowspan="${N}" style="padding:8px 10px;vertical-align:middle">${fmtDate(first.deliveredAt)}</td>
+        </tr>`;
+      } else {
+        html += `<tr>
+          <td style="padding:6px 10px 6px 22px;border-left:3px solid #b8d8c5">${esc(pLabel)}</td>
+          <td style="padding:6px 10px;white-space:nowrap">${esc(row.qty)||'—'} <span style="font-size:11px;color:#aaa">${esc(unitTxt)}</span></td>
+        </tr>`;
+      }
+    });
+  });
+
+  html += '</tbody></table></div>';
+  return html;
+}
+
+function renderHistory() {
+  document.querySelector('#page-admin .table-wrap').style.display = 'none';
+  document.getElementById('pagination').style.display = 'none';
+  document.getElementById('admin-thead').innerHTML = '';
+  document.getElementById('admin-tbody').innerHTML = '';
+
+  const container = document.getElementById('settings-container');
+  container.style.display = 'block';
+
+  const region = REGIONS[adminRegion];
+
+  // 全店舗の履歴件数を集計
+  const storeData = region.stores.map(sid => {
+    const rows = loadH(sid);
+    const cnt = buildGroups(rows.map(r => ({...r, isNew:false}))).length;
+    return { sid, sname: STORES[sid]||sid, cnt };
+  });
+
+  const totalCnt = storeData.reduce((n, s) => n + s.cnt, 0);
+  document.getElementById('admin-summary').innerHTML = `【${region.label}】履歴 ${totalCnt} 件（納品後1ヶ月で自動削除）`;
+
+  // デフォルト店舗
+  if (!adminHistDropdownStore || !STORES[adminHistDropdownStore]) {
+    adminHistDropdownStore = storeData[0]?.sid || '';
+  }
+
+  const options = storeData.map(({sid, sname, cnt}) =>
+    `<option value="${esc(sid)}" ${sid === adminHistDropdownStore ? 'selected' : ''}>${esc(sname)}（${cnt}件）</option>`
+  ).join('');
+
+  const detail = adminHistDropdownStore ? buildHistTable(adminHistDropdownStore) : '';
+
+  container.innerHTML = `
+    <div style="font-size:12px;font-weight:700;color:#555;margin-bottom:10px;letter-spacing:.5px">店舗別に確認</div>
+    <div style="display:flex;gap:8px;align-items:center;margin-bottom:14px;flex-wrap:wrap">
+      <select onchange="adminHistDropdownStore=this.value;renderHistory()"
+        style="border:1px solid #ddd;border-radius:6px;padding:8px 12px;font-size:14px;font-family:inherit;min-width:180px">
+        ${options}
+      </select>
+    </div>
+    ${detail}`;
+}
+
+function renderPagination(totalPages) {
+  const el = document.getElementById('pagination');
+  if (totalPages<=1) { el.style.display='none'; return; }
+  el.style.display='flex';
+  let html = `<button class="page-btn" onclick="goPage(${adminPage-1})" ${adminPage===1?'disabled':''}>‹ 前へ</button>`;
+  for (let i=1; i<=totalPages; i++) {
+    if (totalPages>7 && Math.abs(i-adminPage)>2 && i!==1 && i!==totalPages) { if (i===adminPage-3||i===adminPage+3) html+=`<span class="page-info">…</span>`; continue; }
+    html+=`<button class="page-btn${i===adminPage?' active':''}" onclick="goPage(${i})">${i}</button>`;
+  }
+  html+=`<button class="page-btn" onclick="goPage(${adminPage+1})" ${adminPage===totalPages?'disabled':''}>次へ ›</button>`;
+  el.innerHTML = html;
+}
+
+function goPage(p) { adminPage=p; renderAdmin(); document.getElementById('admin-table')?.scrollIntoView({behavior:'smooth',block:'start'}); }
+
+/* 行単位で更新（発注日・納品予定日） */
+function adminUpd(storeId, rowId, field, value) {
+  const active = loadA(storeId);
+  const row = active.find(r => r.id === rowId);
+  if (row) { row[field] = value; saveA(storeId, active); }
+  updateBadges();
+}
+
+/* グループ単位で備考を一括更新 */
+function adminUpdGroup(storeId, reqDate, field, value) {
+  const active = loadA(storeId);
+  active.filter(r => r.requestDate === reqDate).forEach(r => r[field] = value);
+  saveA(storeId, active);
+  updateBadges();
+}
+
+function showOrderMsg(msgId, text) {
+  const el = document.getElementById(msgId);
+  if (!el) return;
+  el.textContent = text;
+  clearTimeout(el._msgTimer);
+  el._msgTimer = setTimeout(() => { if (el) el.textContent = ''; }, 3000);
+}
+
+function confirmOrderCheck(sid, reqDate, msgId) {
+  const rows = loadA(sid).filter(r => r.requestDate === reqDate);
+  if (!rows.every(r => r.orderDate)) {
+    showOrderMsg(msgId, '発注日を入力してください');
+    return;
+  }
+  setNewGroup(sid, reqDate, false);
+}
+
+function denyGroupCheck(sid, reqDate, msgId) {
+  const rows = loadA(sid).filter(r => r.requestDate === reqDate);
+  if (rows.some(r => r.orderDate)) {
+    showOrderMsg(msgId, '発注日を削除してください');
+    return;
+  }
+  denyGroup(sid, reqDate);
+}
+
+/* グループ単位で確認状態を切替 */
+function setNewGroup(storeId, reqDate, makeNew) {
+  const active = loadA(storeId);
+  active.filter(r => r.requestDate === reqDate).forEach(r => r.isNew = makeNew);
+  saveA(storeId, active);
+  renderAdmin();
+}
+
+/* グループ単位で否認 */
+function withdrawDenied(groupId) {
+  if (!confirm('否認された依頼を取り下げますか？')) return;
+  storeRows = storeRows.filter(r => (r.groupId || r.id) !== groupId);
+  saveA(storeTab, storeRows);
+  renderStore();
+}
+
+function denyGroup(storeId, reqDate) {
+  if (!confirm('この依頼を否認しますか？')) return;
+  const active = loadA(storeId);
+  active.filter(r => r.requestDate === reqDate).forEach(r => { r.denied = true; r.isNew = true; });
+  saveA(storeId, active);
+  renderAdmin();
+  updateBadges();
+}
+
+/* ===== 店舗エリア管理 ===== */
+const CUSTOM_STORES_KEY  = 'custom_stores';
+const STORE_REGION_KEY   = 'store_regions';
+const DELETED_STORES_KEY = 'deleted_stores';
+
+function loadDeletedStores() {
+  const deleted = JSON.parse(localStorage.getItem(DELETED_STORES_KEY) || '[]');
+  deleted.forEach(id => {
+    delete STORES[id];
+    Object.values(REGIONS).forEach(r => { r.stores = r.stores.filter(s => s !== id); });
+  });
+}
+
+function deleteStore(id) {
+  const storeName = STORES[id] || id;
+  if (!confirm(`「${storeName}」を削除します。\nパートナーポータルも削除されますがよろしいですか？`)) return;
+  if (id.startsWith('cs_')) {
+    const saved = JSON.parse(localStorage.getItem(CUSTOM_STORES_KEY) || '{}');
+    delete saved[id];
+    localStorage.setItem(CUSTOM_STORES_KEY, JSON.stringify(saved));
+    _syncCustomStores();
+  } else {
+    const deleted = JSON.parse(localStorage.getItem(DELETED_STORES_KEY) || '[]');
+    if (!deleted.includes(id)) { deleted.push(id); localStorage.setItem(DELETED_STORES_KEY, JSON.stringify(deleted)); }
+    _syncDeletedStores();
+  }
+  const pws = JSON.parse(localStorage.getItem(STORE_PW_KEY) || '{}');
+  delete pws[id];
+  localStorage.setItem(STORE_PW_KEY, JSON.stringify(pws));
+  _syncStorePw();
+  delete STORES[id];
+  Object.values(REGIONS).forEach(r => { r.stores = r.stores.filter(s => s !== id); });
+  refreshStoreSettings();
+  const pwList = document.getElementById('store-pw-list');
+  if (pwList) pwList.innerHTML = buildStorePwList();
+}
+
+function getStoreRegion(storeId) {
+  for (const [rId, r] of Object.entries(REGIONS)) {
+    if (r.stores.includes(storeId)) return rId;
+  }
+  return null;
+}
+
+function loadStoreRegions() {
+  const saved = JSON.parse(localStorage.getItem(STORE_REGION_KEY) || '{}');
+  Object.entries(saved).forEach(([storeId, newRegion]) => {
+    if (!STORES[storeId] || !REGIONS[newRegion]) return;
+    Object.values(REGIONS).forEach(r => { r.stores = r.stores.filter(s => s !== storeId); });
+    REGIONS[newRegion].stores.push(storeId);
+  });
+}
+
+function buildCustomStoreList() {
+  const customSaved = JSON.parse(localStorage.getItem(CUSTOM_STORES_KEY) || '{}');
+  const html = Object.entries(customSaved).map(([id,{name,region}]) =>
+    `<div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid #e0ede5">
+      <span style="flex:1;font-size:13px">${esc(name)}</span>
+      <span style="font-size:11px;color:#888">${REGIONS[region]?.label||region}</span>
+      <button onclick="removeCustomStore('${id}')" style="background:#ef4444;color:white;padding:4px 10px;font-size:12px;border-radius:5px;border:none;cursor:pointer;font-family:inherit">削除</button>
+    </div>`).join('');
+  return html ? `<div style="font-weight:600;font-size:12px;color:#888;margin:12px 0 4px">追加済み店舗（削除）</div>${html}` : '';
+}
+
+function buildStoreRegionContent() {
+  return ['tokai','kansai','kanto'].map(rId => {
+    const rLabel = REGIONS[rId].label;
+    const rows = REGIONS[rId].stores.map(sid => {
+      const others = [['tokai','東海'],['kansai','関西'],['kanto','関東']].filter(([v])=>v!==rId);
+      const opts = others.map(([v,l])=>`<option value="${v}">${l}へ移動</option>`).join('');
+      const delBtn = `<button onclick="deleteStore('${sid}')" style="background:#ef4444;color:white;padding:4px 10px;font-size:12px;border-radius:5px;border:none;cursor:pointer;font-family:inherit;white-space:nowrap">削除</button>`;
+      return `<div style="display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid #e0ede5">
+        <span style="flex:1;font-size:13px">${esc(STORES[sid]||sid)}</span>
+        <select onchange="changeStoreRegion('${sid}',this.value)"
+          style="border:1px solid #ddd;border-radius:5px;padding:4px 8px;font-size:12px;font-family:inherit;color:#555">
+          <option value="" disabled selected style="color:#aaa">移動先</option>
+          ${opts}
+        </select>
+        ${delBtn}
+      </div>`;
+    }).join('');
+    return `<div style="font-weight:700;font-size:11px;color:#22703d;background:#edf2d4;padding:5px 10px;margin-bottom:4px;border-radius:4px">${rLabel}（${REGIONS[rId].stores.length}店舗）</div>${rows}`;
+  }).join('<div style="margin-top:12px"></div>');
+}
+
+function refreshStoreSettings() {
+  const rc = document.getElementById('store-region-content');
+  if (rc) rc.innerHTML = buildStoreRegionContent();
+}
+
+function changeStoreRegion(storeId, newRegion) {
+  const saved = JSON.parse(localStorage.getItem(STORE_REGION_KEY) || '{}');
+  saved[storeId] = newRegion;
+  localStorage.setItem(STORE_REGION_KEY, JSON.stringify(saved));
+  Object.values(REGIONS).forEach(r => { r.stores = r.stores.filter(s => s !== storeId); });
+  if (REGIONS[newRegion]) REGIONS[newRegion].stores.push(storeId);
+  refreshStoreSettings();
+}
+
+function loadCustomStores() {
+  const saved = JSON.parse(localStorage.getItem(CUSTOM_STORES_KEY) || '{}');
+  Object.entries(saved).forEach(([id, {name, region}]) => {
+    STORES[id] = name;
+    if (REGIONS[region] && !REGIONS[region].stores.includes(id)) REGIONS[region].stores.push(id);
+  });
+}
+
+function generateStorePw() {
+  const usedPws = new Set(
+    Object.values(JSON.parse(localStorage.getItem(STORE_PW_KEY) || '{}'))
+  );
+  for (let i = 56; i <= 99; i++) {
+    const pw = 'selfcafe' + String(i).padStart(2, '0');
+    if (!usedPws.has(pw)) return pw;
+  }
+  return 'selfcafe' + Date.now().toString().slice(-4);
+}
+
+function addCustomStore() {
+  const name   = document.getElementById('new-store-name')?.value.trim();
+  const region = document.getElementById('new-store-region')?.value;
+  const msg    = document.getElementById('store-add-msg');
+  if (!name) { msg.style.color='#ef4444'; msg.textContent='店舗名を入力してください'; return; }
+  const id = 'cs_' + Date.now();
+  const saved = JSON.parse(localStorage.getItem(CUSTOM_STORES_KEY) || '{}');
+  saved[id] = { name, region };
+  localStorage.setItem(CUSTOM_STORES_KEY, JSON.stringify(saved));
+  _syncCustomStores();
+  STORES[id] = name;
+  if (REGIONS[region]) REGIONS[region].stores.push(id);
+  const newPw = generateStorePw();
+  setStorePassword(id, newPw);
+  document.getElementById('new-store-name').value = '';
+  msg.style.color='#22703d';
+  msg.innerHTML = `✓ 「${esc(name)}」を追加しました　<span style="background:#fef9c3;border-radius:4px;padding:2px 10px;font-family:monospace;font-size:12px">パスワード：${esc(newPw)}</span>`;
+  setTimeout(() => { if(msg) msg.innerHTML=''; }, 10000);
+  refreshStoreSettings();
+  const pwList = document.getElementById('store-pw-list');
+  if (pwList) pwList.innerHTML = buildStorePwList();
+}
+
+function removeCustomStore(id) {
+  if (!confirm(`「${STORES[id]}」を削除します。\nパートナーポータルも削除されますがよろしいですか？`)) return;
+  const saved = JSON.parse(localStorage.getItem(CUSTOM_STORES_KEY) || '{}');
+  const region = saved[id]?.region;
+  delete saved[id];
+  localStorage.setItem(CUSTOM_STORES_KEY, JSON.stringify(saved));
+  _syncCustomStores();
+  const pws = JSON.parse(localStorage.getItem(STORE_PW_KEY) || '{}');
+  delete pws[id];
+  localStorage.setItem(STORE_PW_KEY, JSON.stringify(pws));
+  _syncStorePw();
+  delete STORES[id];
+  if (region && REGIONS[region]) REGIONS[region].stores = REGIONS[region].stores.filter(s=>s!==id);
+  refreshStoreSettings();
+}
+
+/* ===== 商品設定 ===== */
+const ALL_PRODUCTS_KEY = 'all_products';
+
+function saveAllProducts() {
+  localStorage.setItem(ALL_PRODUCTS_KEY, JSON.stringify(PRODUCTS));
+}
+
+const LEGACY_PRODUCT_NAMES = new Set([
+  '㋣リッド（9オンス/12オンスカップ対応）',
+  'アイス　クッキーアンドクリーム',
+  'アイス　バニラ',
+  'アイス　チョコ',
+  '100RS用カップM（9オンス）',
+  '100RS用カップL（12オンス）',
+  '9オンス カップ蓋',
+  '9オンス カップ蓋（12オンスもOK）',
+  '㋣特選cocoa',
+  'ミルク',
+]);
+
+function loadProductSettings() {
+  const saved = localStorage.getItem(ALL_PRODUCTS_KEY);
+  if (saved) {
+    const savedList = JSON.parse(saved).filter(p => !LEGACY_PRODUCT_NAMES.has(p.name));
+    const savedNames = new Set(savedList.map(p => p.name));
+    // 保存済みリストをベースに、コードに新規追加された商品を末尾に追記
+    const defaults = JSON.parse(JSON.stringify(PRODUCTS));
+    PRODUCTS.length = 0;
+    savedList.forEach(p => PRODUCTS.push(p));
+    defaults.forEach(p => { if (!savedNames.has(p.name)) PRODUCTS.push(p); });
+  }
+}
+
+function saveProductSetting(name, field, value) {
+  const p = PRODUCTS.find(q => q.name === name);
+  if (!p) return;
+  p[field] = value;
+  saveAllProducts();
+}
+
+function addCustomProduct() {
+  const name     = document.getElementById('new-prod-name')?.value.trim();
+  const vendor   = document.getElementById('new-prod-vendor')?.value;
+  const unit     = document.getElementById('new-prod-unit')?.value.trim() || '個';
+  const caseUnit = document.getElementById('new-prod-case')?.value.trim() || '';
+  const msg      = document.getElementById('prod-add-msg');
+  if (!name) { msg.style.color='#ef4444'; msg.textContent='商品名を入力してください'; return; }
+  if (PRODUCTS.find(p => p.name === name)) { msg.style.color='#ef4444'; msg.textContent='同じ名前の商品が既に存在します'; return; }
+  PRODUCTS.push({ vendor, name, label:name, unit, caseUnit });
+  saveAllProducts();
+  ['new-prod-name','new-prod-unit','new-prod-case'].forEach(id => { const el=document.getElementById(id); if(el) el.value=''; });
+  msg.style.color='#22703d'; msg.textContent=`✓ 「${name}」を追加しました`;
+  setTimeout(() => { if(msg) msg.textContent=''; }, 3000);
+  const tbody = document.getElementById('prod-tbl-body');
+  if (tbody) tbody.innerHTML = buildProdRows(); else renderSettings();
+}
+
+function deleteProduct(name) {
+  if (!confirm(`「${name}」を削除しますか？`)) return;
+  const i = PRODUCTS.findIndex(p => p.name === name);
+  if (i >= 0) PRODUCTS.splice(i, 1);
+  saveAllProducts();
+  const tbody = document.getElementById('prod-tbl-body');
+  if (tbody) tbody.innerHTML = buildProdRows(); else renderSettings();
+}
+
+/* ===== 商品カテゴリ開閉 ===== */
+const _openVendors = new Set();
+
+function _initOpenVendors() {
+  VENDOR_CONFIG.forEach(v => _openVendors.add(v.key));
+}
+
+function toggleVendorSection(vendor) {
+  if (_openVendors.has(vendor)) {
+    _openVendors.delete(vendor);
+  } else {
+    _openVendors.add(vendor);
+  }
+  const isOpen = _openVendors.has(vendor);
+  const arrow = document.getElementById('vendor-arrow-' + vendor);
+  if (arrow) arrow.textContent = isOpen ? '▼' : '▶';
+  document.querySelectorAll('tr[data-vendor="' + vendor + '"]').forEach(tr => {
+    tr.style.display = isOpen ? '' : 'none';
+  });
+}
+
+/* ===== 商品ドラッグ並び替え ===== */
+let _dragName = null;
+let _touchDragName = null, _touchDragEl = null, _touchClone = null, _touchStartY = 0;
+
+function prodDragStart(e, name) {
+  _dragName = name;
+  e.dataTransfer.effectAllowed = 'move';
+  setTimeout(() => e.currentTarget.closest('tr')?.classList.add('dragging'), 0);
+}
+function prodDragEnd(e) {
+  e.currentTarget.closest('tr')?.classList.remove('dragging');
+  document.querySelectorAll('.drag-over').forEach(el => el.classList.remove('drag-over'));
+}
+function prodDragOver(e) {
+  e.preventDefault();
+  document.querySelectorAll('tr.drag-over').forEach(el => el.classList.remove('drag-over'));
+  e.currentTarget.closest('tr')?.classList.add('drag-over');
+}
+function prodDrop(e, name) {
+  e.preventDefault();
+  document.querySelectorAll('tr.drag-over').forEach(el => el.classList.remove('drag-over'));
+  applyProdReorder(_dragName, name);
+  _dragName = null;
+}
+
+function prodTouchStart(e, name) {
+  _touchDragName = name;
+  _touchDragEl   = e.currentTarget.closest('tr');
+  _touchStartY   = e.touches[0].clientY;
+  const rect     = _touchDragEl.getBoundingClientRect();
+  _touchClone    = _touchDragEl.cloneNode(true);
+  Object.assign(_touchClone.style, {
+    position:'fixed', top:rect.top+'px', left:rect.left+'px', width:rect.width+'px',
+    opacity:'0.85', zIndex:'9999', pointerEvents:'none',
+    background:'white', boxShadow:'0 6px 20px rgba(0,0,0,.25)', borderRadius:'6px'
+  });
+  document.body.appendChild(_touchClone);
+  _touchDragEl.style.opacity = '0.3';
+}
+function prodTouchMove(e) {
+  if (!_touchClone) return;
+  e.preventDefault();
+  const dy = e.touches[0].clientY - _touchStartY;
+  const rect = _touchDragEl.getBoundingClientRect();
+  _touchClone.style.top = (rect.top + dy) + 'px';
+}
+function prodTouchEnd(e) {
+  if (!_touchClone) return;
+  const finalY = e.changedTouches[0].clientY;
+  document.body.removeChild(_touchClone); _touchClone = null;
+  _touchDragEl.style.opacity = '';
+  let targetName = null;
+  document.querySelectorAll('tr[data-pname]').forEach(row => {
+    const r = row.getBoundingClientRect();
+    if (finalY >= r.top && finalY <= r.bottom) targetName = row.dataset.pname;
+  });
+  applyProdReorder(_touchDragName, targetName);
+  _touchDragName = _touchDragEl = null;
+}
+
+/* ===== 仕入先カテゴリ管理 ===== */
+function buildVendorSelect() {
+  return VENDOR_CONFIG.map(v => `<option value="${esc(v.key)}">${esc(v.label)}</option>`).join('');
+}
+
+function buildVendorRows() {
+  return VENDOR_CONFIG.map((v, i) => `
+    <div style="display:flex;gap:6px;align-items:center;margin-bottom:6px">
+      <input id="vname-${i}" value="${esc(v.label)}"
+        style="border:1px solid #ddd;border-radius:6px;padding:6px 10px;font-size:13px;font-family:inherit;flex:1">
+      <button onclick="renameVendor(${i})"
+        style="background:#22703d;color:white;padding:6px 12px;font-size:12px;font-weight:600;border-radius:6px;border:none;cursor:pointer;font-family:inherit;white-space:nowrap">保存</button>
+      <button onclick="deleteVendor('${esc(v.key)}')"
+        style="background:#e0e0e0;color:#555;padding:6px 10px;font-size:12px;border-radius:6px;border:none;cursor:pointer;font-family:inherit">削除</button>
+    </div>`).join('');
+}
+
+function refreshVendorRows() {
+  const el = document.getElementById('vendor-rows');
+  if (el) el.innerHTML = buildVendorRows();
+  const sel = document.getElementById('new-prod-vendor');
+  if (sel) sel.innerHTML = buildVendorSelect();
+}
+
+function renameVendor(idx) {
+  const inp = document.getElementById('vname-' + idx);
+  if (!inp) return;
+  const newLabel = inp.value.trim();
+  if (!newLabel) return;
+  VENDOR_CONFIG[idx].label = newLabel;
+  saveVendorConfig();
+  refreshVendorRows();
+  document.getElementById('vendor-msg').textContent = '保存しました';
+  setTimeout(() => { const m = document.getElementById('vendor-msg'); if (m) m.textContent = ''; }, 2000);
+}
+
+function addVendor() {
+  const inp = document.getElementById('new-vendor-name');
+  if (!inp) return;
+  const label = inp.value.trim();
+  if (!label) { document.getElementById('vendor-msg').textContent = 'カテゴリ名を入力してください'; return; }
+  const key = 'vc' + Date.now().toString(36);
+  VENDOR_CONFIG.push({key, label});
+  saveVendorConfig();
+  inp.value = '';
+  refreshVendorRows();
+  document.getElementById('vendor-msg').textContent = '追加しました';
+  setTimeout(() => { const m = document.getElementById('vendor-msg'); if (m) m.textContent = ''; }, 2000);
+}
+
+function deleteVendor(key) {
+  const inUse = PRODUCTS.some(p => p.vendor === key);
+  if (inUse) { document.getElementById('vendor-msg').textContent = 'このカテゴリに商品があるため削除できません'; return; }
+  if (!confirm('このカテゴリを削除しますか？')) return;
+  const idx = VENDOR_CONFIG.findIndex(v => v.key === key);
+  if (idx >= 0) VENDOR_CONFIG.splice(idx, 1);
+  saveVendorConfig();
+  refreshVendorRows();
+}
+
+function buildProdRows() {
+  const VENDOR_LABELS = Object.fromEntries(VENDOR_CONFIG.map(v => [v.key, v.label]));
+  const VENDOR_ORDER  = VENDOR_CONFIG.map(v => v.key);
+  return VENDOR_ORDER.map(vendor => {
+    const items  = PRODUCTS.filter(p => p.vendor === vendor);
+    const isOpen = _openVendors.has(vendor);
+    const hdr = `<tr class="settings-vendor-hdr" onclick="toggleVendorSection('${vendor}')" style="cursor:pointer">
+      <td colspan="6"><div style="display:flex;justify-content:space-between;align-items:center">
+        <span>${VENDOR_LABELS[vendor]}</span>
+        <span id="vendor-arrow-${vendor}" style="font-size:11px;color:#22703d">${isOpen ? '▼' : '▶'}</span>
+      </div></td></tr>`;
+    return hdr +
+      items.map((p, idx) => `<tr data-pname="${esc(p.name)}" data-vendor="${esc(vendor)}" style="${isOpen ? '' : 'display:none'}"
+        ondragover="prodDragOver(event)" ondrop="prodDrop(event,'${esc(p.name)}')">
+        <td class="drag-handle" draggable="true"
+          ondragstart="prodDragStart(event,'${esc(p.name)}')"
+          ondragend="prodDragEnd(event)"
+          ontouchstart="prodTouchStart(event,'${esc(p.name)}')"
+          ontouchmove="prodTouchMove(event)"
+          ontouchend="prodTouchEnd(event)">⠿</td>
+        <td data-label="商品名" style="min-width:150px"><input type="text" value="${esc(p.label)}"
+          style="width:100%;border:1px solid #ddd;border-radius:5px;padding:5px 7px;font-size:13px;font-family:inherit"
+          onchange="saveProductSetting('${esc(p.name)}','label',this.value)"></td>
+        <td data-label="単位"><input type="text" value="${esc(p.unit)}"
+          style="width:76px;border:1px solid #ddd;border-radius:5px;padding:5px 7px;font-size:13px;font-family:inherit"
+          onchange="saveProductSetting('${esc(p.name)}','unit',this.value)"></td>
+        <td data-label="単価（円）"><input type="number" min="0" value="${p.price||''}" placeholder="未設定"
+          style="width:96px;border:1px solid #ddd;border-radius:5px;padding:5px 7px;font-size:13px;font-family:inherit;text-align:right"
+          onchange="saveProductSetting('${esc(p.name)}','price',this.value?Number(this.value):'')"></td>
+        <td data-label="ケース・入数"><input type="text" value="${esc(p.caseUnit)}" placeholder="なし"
+          style="width:100%;max-width:260px;border:1px solid #ddd;border-radius:5px;padding:5px 7px;font-size:13px;font-family:inherit"
+          onchange="saveProductSetting('${esc(p.name)}','caseUnit',this.value)"></td>
+        <td style="text-align:center;white-space:nowrap">
+          <button onclick="deleteProduct('${esc(p.name)}')"
+            style="background:#ef4444;color:white;border:none;border-radius:5px;padding:4px 10px;font-size:12px;cursor:pointer;font-family:inherit">削除</button>
+        </td>
+      </tr>`).join('');
+  }).join('');
+}
+
+function applyProdReorder(srcName, dstName) {
+  if (!srcName || !dstName || srcName === dstName) return;
+  const srcP = PRODUCTS.find(p => p.name === srcName);
+  const dstP = PRODUCTS.find(p => p.name === dstName);
+  if (!srcP || !dstP || srcP.vendor !== dstP.vendor) return;
+  const ai = PRODUCTS.indexOf(srcP);
+  PRODUCTS.splice(ai, 1);
+  PRODUCTS.splice(PRODUCTS.indexOf(dstP), 0, srcP);
+  saveAllProducts();
+  const tbody = document.getElementById('prod-tbl-body');
+  if (tbody) { tbody.innerHTML = buildProdRows(); return; }
+  renderSettings();
+}
+
+function renderSettings() {
+  /* テーブルを隠して設定コンテナを表示 */
+  document.querySelector('#page-admin .table-wrap').style.display = 'none';
+  document.getElementById('pagination').style.display = 'none';
+  document.getElementById('admin-thead').innerHTML = '';
+  document.getElementById('admin-tbody').innerHTML = '';
+  document.getElementById('admin-summary').innerHTML = '';
+
+  const container = document.getElementById('settings-container');
+  container.style.display = 'block';
+
+  container.innerHTML = `
+    <!-- 店舗追加 -->
+    <div class="settings-card">
+      <div class="settings-card-title">店舗管理</div>
+
+      <!-- 新規追加 -->
+      <div style="font-weight:600;font-size:12px;color:#888;margin-bottom:8px">新規追加</div>
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:6px">
+        <input type="text" id="new-store-name" placeholder="店舗名"
+          style="border:1px solid #ddd;border-radius:6px;padding:8px 12px;font-size:14px;font-family:inherit;flex:1;min-width:130px">
+        <select id="new-store-region" style="border:1px solid #ddd;border-radius:6px;padding:8px 10px;font-size:14px;font-family:inherit">
+          <option value="tokai">東海</option>
+          <option value="kansai">関西</option>
+          <option value="kanto">関東</option>
+        </select>
+        <button onclick="addCustomStore()" style="background:#22703d;color:white;padding:9px 18px;font-size:13px;font-weight:600;border-radius:6px;border:none;cursor:pointer;font-family:inherit">追加</button>
+      </div>
+      <div id="store-add-msg" style="font-size:12px;min-height:18px"></div>
+
+      <!-- エリア変更 -->
+      <div style="margin-top:18px">
+        <div class="settings-accordion-hdr" onclick="toggleStoreRegion()">
+          <span style="font-size:13px;font-weight:700">店舗のエリア変更</span>
+          <span id="store-region-arrow" style="font-size:12px;color:#888">▶ タップして開く</span>
+        </div>
+        <div id="store-region-body" style="display:none;margin-top:10px;max-height:360px;overflow-y:auto">
+          <div id="store-region-content">${buildStoreRegionContent()}</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 店舗別商品設定 -->
+    <div class="settings-card">
+      <div class="settings-accordion-hdr" onclick="toggleStoreProdSettings()">
+        <span>店舗別取扱商品設定</span>
+        <span id="store-prod-settings-arrow" style="font-size:12px;color:#888">▶ タップして開く</span>
+      </div>
+      <div id="store-prod-settings-body" style="display:none">
+        <div class="settings-accordion-body">
+          <div style="font-size:12px;color:#888;margin-bottom:10px">店舗ごとに取り扱う商品を選択してください。未設定の場合は全商品が表示されます。</div>
+          <div class="store-prod-cfg-wrap">
+            <select id="store-prod-cfg-sel" class="store-prod-cfg-store-sel"
+              onchange="renderStoreProdCfg()">
+              ${Object.entries(STORES).map(([sid,sname]) => `<option value="${esc(sid)}">${esc(sname)}</option>`).join('')}
+            </select>
+          </div>
+          <div id="store-prod-cfg-body" style="margin-top:12px"></div>
+          <div style="margin-top:10px;display:flex;gap:8px">
+            <button onclick="saveStoreProdCfg()"
+              style="background:#22703d;color:white;padding:8px 20px;font-size:13px;font-weight:600;border-radius:6px;border:none;cursor:pointer;font-family:inherit">保存</button>
+            <button onclick="clearStoreProdCfg()"
+              style="background:#e0e0e0;color:#555;padding:8px 16px;font-size:13px;border-radius:6px;border:none;cursor:pointer;font-family:inherit">全商品に戻す</button>
+            <span id="store-prod-cfg-msg" style="font-size:12px;color:#22703d;align-self:center;min-height:18px"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 商品設定（アコーディオン） -->
+    <div class="settings-card">
+      <div class="settings-accordion-hdr" onclick="toggleProdSettings()">
+        <span>商品設定</span>
+        <span id="prod-settings-arrow" style="font-size:12px;color:#888">▶ タップして開く</span>
+      </div>
+      <div id="prod-settings-body" style="display:none">
+        <div class="settings-accordion-body">
+          <!-- 仕入先カテゴリ管理 -->
+          <div style="background:#fffef0;border-radius:8px;padding:12px 14px;margin-bottom:14px">
+            <div style="font-weight:600;font-size:12px;color:#888;margin-bottom:10px">仕入先カテゴリ管理</div>
+            <div id="vendor-rows">${buildVendorRows()}</div>
+            <div style="display:flex;gap:6px;align-items:center;margin-top:8px">
+              <input id="new-vendor-name" placeholder="新しいカテゴリ名"
+                style="border:1px solid #ddd;border-radius:6px;padding:6px 10px;font-size:13px;font-family:inherit;flex:1">
+              <button onclick="addVendor()"
+                style="background:#22703d;color:white;padding:6px 14px;font-size:12px;font-weight:600;border-radius:6px;border:none;cursor:pointer;font-family:inherit;white-space:nowrap">追加</button>
+            </div>
+            <div id="vendor-msg" style="font-size:12px;margin-top:6px;min-height:18px;color:#22703d"></div>
+          </div>
+          <!-- 商品追加フォーム -->
+          <div style="background:#fffef0;border-radius:8px;padding:12px 14px;margin-bottom:14px">
+            <div style="font-weight:600;font-size:12px;color:#888;margin-bottom:8px">商品を追加</div>
+            <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center">
+              <input id="new-prod-name" placeholder="商品名（必須）"
+                style="border:1px solid #ddd;border-radius:6px;padding:7px 10px;font-size:13px;font-family:inherit;flex:1;min-width:120px">
+              <select id="new-prod-vendor"
+                style="border:1px solid #ddd;border-radius:6px;padding:7px 10px;font-size:13px;font-family:inherit">
+                ${buildVendorSelect()}
+              </select>
+              <input id="new-prod-unit" placeholder="単位"
+                style="border:1px solid #ddd;border-radius:6px;padding:7px 10px;font-size:13px;font-family:inherit;width:70px">
+              <input id="new-prod-case" placeholder="ケース単位"
+                style="border:1px solid #ddd;border-radius:6px;padding:7px 10px;font-size:13px;font-family:inherit;width:130px">
+              <button onclick="addCustomProduct()"
+                style="background:#22703d;color:white;padding:8px 16px;font-size:13px;font-weight:600;border-radius:6px;border:none;cursor:pointer;font-family:inherit;white-space:nowrap">追加</button>
+            </div>
+            <div id="prod-add-msg" style="font-size:12px;margin-top:6px;min-height:18px"></div>
+          </div>
+          <!-- 商品一覧 -->
+          <table class="settings-tbl">
+            <thead><tr>
+              <th style="width:44px"></th>
+              <th>商品名</th><th style="width:90px">単位</th>
+              <th style="width:110px">単価（円）</th><th>ケース・入数</th>
+              <th style="width:52px"></th>
+            </tr></thead>
+            <tbody id="prod-tbl-body">${buildProdRows()}</tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- 店舗別パスワード設定 -->
+    <div class="settings-card">
+      <div class="settings-accordion-hdr" onclick="toggleStorePwSettings()">
+        <span>店舗別パスワード設定</span>
+        <span id="store-pw-settings-arrow" style="font-size:12px;color:#888">▶ タップして開く</span>
+      </div>
+      <div id="store-pw-settings-body" style="display:none">
+        <div class="settings-accordion-body">
+          <div style="font-size:12px;color:#888;margin-bottom:12px">各店舗の現在のパスワードを確認・変更できます。</div>
+          <div id="store-pw-list">${buildStorePwList()}</div>
+          <div id="store-pw-msg" style="font-size:12px;margin-top:8px;min-height:18px;color:#22703d"></div>
+          <div style="margin-top:14px;padding-top:12px;border-top:1px solid #e0ede5">
+            <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+              <button onclick="syncAllStoreDataToGas()" style="background:#f0f4ff;color:#3b5bdb;border:1px solid #c5cff5;padding:7px 14px;font-size:12px;font-weight:600;border-radius:6px;cursor:pointer;font-family:inherit;white-space:nowrap">Supabaseに手動同期</button>
+              <span style="font-size:11px;color:#888">新規店舗が別端末でログインできない場合に押してください</span>
+            </div>
+            <div id="store-sync-msg" style="font-size:12px;margin-top:6px;min-height:16px"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    `;
+}
+
+async function clearAllOrders() {
+  if (!confirm('全店舗の発注依頼・履歴をすべて削除します。本当によろしいですか？')) return;
+  const msg = document.getElementById('clear-orders-msg');
+  if (msg) msg.textContent = '削除中...';
+  const allStores = Object.keys(STORES);
+  for (const sid of allStores) {
+    ORDERS_CACHE[sid] = [];
+    localStorage.removeItem(hKey(sid));
+    await _syncStoreToDb(sid, []);
+  }
+  if (msg) { msg.textContent = '✓ 全データを消去しました'; setTimeout(() => { if(msg) msg.textContent=''; }, 3000); }
+  renderAdmin();
+  updateBadges();
+}
+
+function toggleStoreRegion() {
+  const body  = document.getElementById('store-region-body');
+  const arrow = document.getElementById('store-region-arrow');
+  const open  = body.style.display === 'none';
+  body.style.display = open ? 'block' : 'none';
+  arrow.textContent  = open ? '▼ 閉じる' : '▶ タップして開く';
+}
+
+function toggleProdSettings() {
+  const body  = document.getElementById('prod-settings-body');
+  const arrow = document.getElementById('prod-settings-arrow');
+  const open  = body.style.display === 'none';
+  body.style.display  = open ? 'block' : 'none';
+  arrow.textContent   = open ? '▼ 閉じる' : '▶ タップして開く';
+}
+
+function toggleStoreProdSettings() {
+  const body  = document.getElementById('store-prod-settings-body');
+  const arrow = document.getElementById('store-prod-settings-arrow');
+  const open  = body.style.display === 'none';
+  body.style.display = open ? 'block' : 'none';
+  arrow.textContent  = open ? '▼ 閉じる' : '▶ タップして開く';
+  if (open) renderStoreProdCfg();
+}
+
+function renderStoreProdCfg() {
+  const sel = document.getElementById('store-prod-cfg-sel');
+  const container = document.getElementById('store-prod-cfg-body');
+  if (!sel || !container) return;
+  const sid = sel.value;
+  const cfg = getStoreProductConfig(sid);
+  const selected = cfg ? new Set(cfg) : null;
+
+  const VENDOR_LABELS = Object.fromEntries(VENDOR_CONFIG.map(v => [v.key, v.label]));
+  const byVendor = {};
+  PRODUCTS.forEach(p => {
+    if (!byVendor[p.vendor]) byVendor[p.vendor] = [];
+    byVendor[p.vendor].push(p);
+  });
+
+  container.innerHTML = `<div class="store-prod-cfg-list">` +
+    VENDOR_CONFIG.map(v => {
+      const items = byVendor[v.key] || [];
+      if (!items.length) return '';
+      return `<div class="store-prod-vendor-hdr" style="display:flex;align-items:center;justify-content:space-between">
+          <span>${esc(v.label)}</span>
+          <label style="font-weight:normal;font-size:11px;display:flex;align-items:center;gap:4px;cursor:pointer;margin-left:8px">
+            <input type="checkbox" data-vendor-all="${esc(v.key)}" onchange="toggleVendorAll('${esc(v.key)}',this.checked)" style="width:13px;height:13px;accent-color:#22703d;flex-shrink:0">全選択
+          </label>
+        </div>
+        <div class="store-prod-vendor-grid">` +
+        items.map(p => {
+          const checked = selected === null || selected.has(p.name) ? 'checked' : '';
+          return `<label><input type="checkbox" value="${esc(p.name)}" data-vendor="${esc(v.key)}" onchange="updateVendorAllCheck('${esc(v.key)}')" ${checked}>${esc(p.label||p.name)}</label>`;
+        }).join('') +
+        `</div>`;
+    }).join('') +
+    `</div>`;
+
+  // 全選択チェックボックスの初期状態を反映
+  VENDOR_CONFIG.forEach(v => {
+    const allBox = container.querySelector(`input[data-vendor-all="${v.key}"]`);
+    if (!allBox) return;
+    const boxes = [...container.querySelectorAll(`input[data-vendor="${v.key}"]`)];
+    const n = boxes.filter(el => el.checked).length;
+    if (n === boxes.length)    { allBox.checked = true;  allBox.indeterminate = false; }
+    else if (n === 0)          { allBox.checked = false; allBox.indeterminate = false; }
+    else                       { allBox.checked = false; allBox.indeterminate = true;  }
+  });
+}
+
+function toggleVendorAll(vkey, checked) {
+  document.querySelectorAll(`#store-prod-cfg-body input[data-vendor="${vkey}"]`)
+    .forEach(el => el.checked = checked);
+}
+
+function updateVendorAllCheck(vkey) {
+  const container = document.getElementById('store-prod-cfg-body');
+  const allBox = container?.querySelector(`input[data-vendor-all="${vkey}"]`);
+  if (!allBox) return;
+  const boxes = [...container.querySelectorAll(`input[data-vendor="${vkey}"]`)];
+  const n = boxes.filter(el => el.checked).length;
+  if (n === boxes.length)    { allBox.checked = true;  allBox.indeterminate = false; }
+  else if (n === 0)          { allBox.checked = false; allBox.indeterminate = false; }
+  else                       { allBox.checked = false; allBox.indeterminate = true;  }
+}
+
+function saveStoreProdCfg() {
+  const sel = document.getElementById('store-prod-cfg-sel');
+  const container = document.getElementById('store-prod-cfg-body');
+  const msg = document.getElementById('store-prod-cfg-msg');
+  if (!sel || !container) return;
+  const sid = sel.value;
+  const checked = [...container.querySelectorAll('input[type=checkbox]:checked')].map(el => el.value);
+  setStoreProductConfig(sid, checked);
+  if (msg) { msg.textContent = '✓ 保存しました'; setTimeout(() => { if(msg) msg.textContent=''; }, 2500); }
+}
+
+function clearStoreProdCfg() {
+  const sel = document.getElementById('store-prod-cfg-sel');
+  const msg = document.getElementById('store-prod-cfg-msg');
+  if (!sel) return;
+  const sid = sel.value;
+  setStoreProductConfig(sid, null);
+  renderStoreProdCfg();
+  if (msg) { msg.textContent = '✓ 全商品表示に戻しました'; setTimeout(() => { if(msg) msg.textContent=''; }, 2500); }
+}
+
+function toggleStorePwSettings() {
+  const body  = document.getElementById('store-pw-settings-body');
+  const arrow = document.getElementById('store-pw-settings-arrow');
+  const open  = body.style.display === 'none';
+  body.style.display = open ? 'block' : 'none';
+  arrow.textContent  = open ? '▼ 閉じる' : '▶ タップして開く';
+}
+
+function getActiveStorePw(sid) {
+  const pws = JSON.parse(localStorage.getItem(STORE_PW_KEY) || '{}');
+  return pws[sid] || '—';
+}
+
+function buildStorePwList() {
+  const pws = JSON.parse(localStorage.getItem(STORE_PW_KEY) || '{}');
+  return Object.entries(STORES).map(([sid, sname]) => {
+    const activePw = pws[sid] || '—';
+    return `<div style="display:flex;gap:8px;align-items:center;padding:7px 0;border-bottom:1px solid #eee;flex-wrap:wrap">
+      <span style="flex:1;min-width:100px;font-size:13px">${esc(sname)}</span>
+      <span style="font-size:11px;color:#888;white-space:nowrap">現在:</span><span style="font-size:12px;color:#333;background:#fef9c3;border-radius:5px;padding:4px 10px;font-family:monospace;white-space:nowrap">${esc(activePw)}</span>
+      <div style="display:flex;gap:4px;align-items:center">
+        <input type="text" id="spw-${esc(sid)}" placeholder="新しいパスワード"
+          style="border:1px solid #ddd;border-radius:6px;padding:6px 8px;font-size:13px;font-family:inherit;width:150px;min-width:100px">
+        <button onclick="saveStorePw('${esc(sid)}')"
+          style="background:#22703d;color:white;padding:6px 12px;font-size:12px;font-weight:600;border-radius:6px;border:none;cursor:pointer;font-family:inherit;white-space:nowrap">変更</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function saveStorePw(storeId) {
+  const inp = document.getElementById('spw-' + storeId);
+  const pw = inp?.value.trim();
+  const msg = document.getElementById('store-pw-msg');
+  if (!pw) { if(msg){msg.style.color='#ef4444';msg.textContent='パスワードを入力してください';setTimeout(()=>{msg.textContent='';},2000);} return; }
+  const allPws = JSON.parse(localStorage.getItem(STORE_PW_KEY) || '{}');
+  const defaultMap = _storeToDefaultPw();
+  const conflict = Object.entries(STORES).find(([sid]) => {
+    if (sid === storeId) return false;
+    return (allPws[sid] || defaultMap[sid]) === pw;
+  });
+  if (conflict) {
+    if(msg){msg.style.color='#ef4444';msg.textContent=`「${esc(STORES[conflict[0]]||conflict[0])}」で使用中のパスワードです`;setTimeout(()=>{msg.textContent='';},3000);}
+    return;
+  }
+  const allPws = JSON.parse(localStorage.getItem(STORE_PW_KEY) || '{}');
+  if (allPws['__admin__'] === pw) {
+    if(msg){msg.style.color='#ef4444';msg.textContent='管理者パスワードと同じパスワードは使用できません';setTimeout(()=>{msg.textContent='';},3000);}
+    return;
+  }
+  setStorePassword(storeId, pw);
+  inp.value = '';
+  document.getElementById('store-pw-list').innerHTML = buildStorePwList();
+  if (msg) { msg.style.color='#22703d'; msg.textContent=`✓ 「${esc(STORES[storeId]||storeId)}」のパスワードを保存しました`; setTimeout(()=>{msg.textContent='';},2500); }
+}
+
+function clearStorePw(storeId) {
+  if (!confirm(`「${STORES[storeId]}」のパスワードをデフォルトに戻しますか？`)) return;
+  clearStorePassword(storeId);
+  document.getElementById('store-pw-list').innerHTML = buildStorePwList();
+  const msg = document.getElementById('store-pw-msg');
+  if (msg) { msg.style.color='#22703d'; msg.textContent='✓ デフォルトパスワードに戻しました'; setTimeout(()=>{msg.textContent='';},2500); }
+}
+
+function changePin() {
+  const np = document.getElementById('new-pin-input')?.value;
+  const nc = document.getElementById('new-pin-confirm')?.value;
+  const msg = document.getElementById('pin-change-msg');
+  if (!np) { msg.style.color='#ef4444'; msg.textContent='PINを入力してください'; return; }
+  if (np !== nc) { msg.style.color='#ef4444'; msg.textContent='PINが一致しません'; return; }
+  _adminPin = np;
+  _gasSaveSetting('admin_pin', np);
+  document.getElementById('new-pin-input').value = '';
+  document.getElementById('new-pin-confirm').value = '';
+  msg.style.color='#22703d'; msg.textContent='✓ PINを変更しました';
+  setTimeout(() => { if (msg) msg.textContent=''; }, 3000);
+}
+
+let _lastInnerWidth = window.innerWidth;
+window.addEventListener('resize', () => {
+  const w = window.innerWidth;
+  if (w === _lastInnerWidth) return; // 高さのみの変化（スマホキーボード）は無視
+  _lastInnerWidth = w;
+  if (location.hash !== '#admin') renderStore();
+});
+
+loadCustomStores();
+loadDeletedStores();
+loadStoreRegions();
+loadVendorConfig();
+loadProductSettings();
+purgeHistory();
+applyTimeMsg();
+populateLoginStoreSelect();
+
+(async () => {
+  // セッションが有効な場合のみロック画面を隠す（initGasのネットワーク待ちで画面が出るのを防ぐ）
+  if (sessionStorage.getItem('admin_authed') === '1' || isSiteAuthed()) {
+    document.getElementById('site-lock').classList.add('hidden');
+  }
+  await initGas();
+  _initRealtime();
+  if (isAuthed()) {
+    showPage('admin');
+  } else if (isSiteAuthed()) {
+    showPage('store');
+  } else {
+    document.getElementById('site-lock').classList.remove('hidden');
+    setTimeout(() => document.getElementById('site-pw-input')?.focus(), 100);
+  }
+})();
+</script>
+</body>
+</html>
