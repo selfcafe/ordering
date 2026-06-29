@@ -584,6 +584,8 @@ async function syncAllStoreDataToGas() {
     _gasSaveSetting('custom_stores',    localStorage.getItem(CUSTOM_STORES_KEY) || '{}'),
     _gasSaveSetting('deleted_stores',   localStorage.getItem(DELETED_STORES_KEY) || '[]'),
     _gasSaveSetting('store_product_cfg',localStorage.getItem(STORE_PRODUCTS_KEY) || '{}'),
+    _gasSaveSetting('all_products',     localStorage.getItem(ALL_PRODUCTS_KEY)   || '[]'),
+    _gasSaveSetting('vendor_config',    localStorage.getItem(VENDOR_CONFIG_KEY)  || '[]'),
   ]);
   if (msg) {
     msg.style.color = results.every(Boolean) ? '#22703d' : '#ef4444';
@@ -610,11 +612,19 @@ async function initGas() {
       if (r.key === 'custom_stores')     localStorage.setItem(CUSTOM_STORES_KEY,   clean(r.value));
       if (r.key === 'deleted_stores')    localStorage.setItem(DELETED_STORES_KEY,  clean(r.value));
       if (r.key === 'store_product_cfg') localStorage.setItem(STORE_PRODUCTS_KEY,  clean(r.value));
+      if (r.key === 'all_products')      localStorage.setItem(ALL_PRODUCTS_KEY,    clean(r.value));
+      if (r.key === 'vendor_config')     localStorage.setItem(VENDOR_CONFIG_KEY,   clean(r.value));
     });
+    if (gasKeys.has('all_products') || gasKeys.has('vendor_config')) {
+      loadVendorConfig();
+      loadProductSettings();
+    }
     if (!gasKeys.has('store_passwords')   && localStorage.getItem(STORE_PW_KEY))        _syncStorePw();
     if (!gasKeys.has('custom_stores')     && localStorage.getItem(CUSTOM_STORES_KEY))   _syncCustomStores();
     if (!gasKeys.has('deleted_stores')    && localStorage.getItem(DELETED_STORES_KEY))  _syncDeletedStores();
     if (!gasKeys.has('store_product_cfg') && localStorage.getItem(STORE_PRODUCTS_KEY))  _syncStoreProductCfg();
+    if (!gasKeys.has('all_products')      && localStorage.getItem(ALL_PRODUCTS_KEY))    _gasSaveSetting('all_products',  localStorage.getItem(ALL_PRODUCTS_KEY));
+    if (!gasKeys.has('vendor_config')     && localStorage.getItem(VENDOR_CONFIG_KEY))   _gasSaveSetting('vendor_config', localStorage.getItem(VENDOR_CONFIG_KEY));
     loadCustomStores();
     loadDeletedStores();
     // パスワード一覧が開いている場合は再描画
@@ -720,7 +730,11 @@ let VENDOR_CONFIG = [
   {key:'other', label:'その他'},
 ];
 const VENDOR_CONFIG_KEY = 'vendor_config';
-function saveVendorConfig() { localStorage.setItem(VENDOR_CONFIG_KEY, JSON.stringify(VENDOR_CONFIG)); }
+function saveVendorConfig() {
+  const json = JSON.stringify(VENDOR_CONFIG);
+  localStorage.setItem(VENDOR_CONFIG_KEY, json);
+  _gasSaveSetting('vendor_config', json);
+}
 function loadVendorConfig() {
   const saved = localStorage.getItem(VENDOR_CONFIG_KEY);
   if (saved) { VENDOR_CONFIG.length = 0; JSON.parse(saved).forEach(v => VENDOR_CONFIG.push(v)); }
@@ -2624,7 +2638,9 @@ function removeCustomStore(id) {
 const ALL_PRODUCTS_KEY = 'all_products';
 
 function saveAllProducts() {
-  localStorage.setItem(ALL_PRODUCTS_KEY, JSON.stringify(PRODUCTS));
+  const json = JSON.stringify(PRODUCTS);
+  localStorage.setItem(ALL_PRODUCTS_KEY, json);
+  _gasSaveSetting('all_products', json);
 }
 
 const LEGACY_PRODUCT_NAMES = new Set([
