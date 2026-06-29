@@ -2730,7 +2730,7 @@ function loadProductSettings() {
     PRODUCTS.length = 0;
     savedList.forEach(p => {
       const def = defaultsByName[p.name];
-      PRODUCTS.push(def ? { ...p, vendor: def.vendor } : p);
+      PRODUCTS.push(def ? { ...p, vendor: def.vendor, code: def.code ?? p.code ?? '' } : p);
     });
     defaults.forEach(p => { if (!savedNames.has(p.name)) PRODUCTS.push(p); });
   }
