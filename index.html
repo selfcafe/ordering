@@ -1077,11 +1077,10 @@ async function uploadOrderImage(file) {
   try {
     const blob   = await compressLostImage(file);
     const base64 = await _blobToBase64(blob);
-    const id = uid();
-    const r = await gasPost('saveLostItem', {
-      item: { id, image_url: null },
+    const r = await gasPost('saveOrderImage', {
       imageBase64: base64,
       imageMime: 'image/jpeg',
+      filename: 'order_' + uid(),
     });
     if (r.error) { alert('写真アップロード失敗: ' + r.error); return null; }
     return r.image_url;
