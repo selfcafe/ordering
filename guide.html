@@ -1,0 +1,876 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>パートナーポータル 操作ガイド</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:           #F5F7F6;
+      --surface:      #FFFFFF;
+      --text:         #1D2620;
+      --text-muted:   #5A6860;
+      --accent:       #1C6855;
+      --accent-light: #E3EFEB;
+      --accent-mid:   #2E8068;
+      --warn-bg:      #FFF7ED;
+      --warn-border:  #F59E0B;
+      --warn-text:    #78340F;
+      --divider:      #CBD5CE;
+      --step-num-bg:  #1C6855;
+      --step-num-fg:  #FFFFFF;
+      --tag-bg:       #E3EFEB;
+      --tag-text:     #15543F;
+      --shadow:       0 1px 4px rgba(0,0,0,.08);
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic", "游ゴシック体", YuGothic, "Noto Sans JP", sans-serif;
+      font-size: 17px;
+      line-height: 1.75;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .site-header {
+      background: var(--accent);
+      color: #fff;
+      padding: 32px 24px 28px;
+    }
+    .site-header .eyebrow {
+      font-size: 12px;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      opacity: .7;
+      margin-bottom: 8px;
+    }
+    .site-header h1 {
+      font-size: clamp(22px, 5vw, 32px);
+      font-weight: 700;
+      line-height: 1.3;
+      text-wrap: balance;
+    }
+    .site-header .subtitle {
+      margin-top: 8px;
+      font-size: 14px;
+      opacity: .8;
+    }
+
+    .container {
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    .toc {
+      background: var(--surface);
+      border: 1.5px solid var(--divider);
+      border-radius: 12px;
+      padding: 24px;
+      margin: 32px 0;
+    }
+    .toc-title {
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: .1em;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      margin-bottom: 14px;
+    }
+    .toc ol {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .toc a {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--accent);
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 15px;
+      padding: 6px 10px;
+      border-radius: 7px;
+      transition: background .15s;
+    }
+    .toc a:hover { background: var(--accent-light); }
+    .toc-num {
+      width: 24px; height: 24px;
+      background: var(--accent-light);
+      color: var(--accent);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px; font-weight: 700; flex-shrink: 0;
+    }
+
+    .section { margin-bottom: 48px; }
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 24px;
+    }
+    .section-icon {
+      width: 44px; height: 44px;
+      background: var(--accent);
+      border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+      font-size: 22px;
+    }
+    .section h2 {
+      font-size: 20px;
+      font-weight: 700;
+      line-height: 1.3;
+    }
+    .section h2 small {
+      display: block;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    hr.divider {
+      border: none;
+      border-top: 1.5px solid var(--divider);
+      margin: 40px 0;
+    }
+
+    .steps { display: flex; flex-direction: column; gap: 16px; }
+
+    .step {
+      display: grid;
+      grid-template-columns: 44px 1fr;
+      gap: 0 16px;
+      background: var(--surface);
+      border-radius: 14px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+    .step-num-col {
+      background: var(--step-num-bg);
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding-top: 20px;
+    }
+    .step-num {
+      color: var(--step-num-fg);
+      font-size: 18px;
+      font-weight: 800;
+      line-height: 1;
+    }
+    .step-body { padding: 18px 18px 18px 2px; }
+    .step-action {
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 6px;
+    }
+    .step-desc {
+      font-size: 15px;
+      color: var(--text-muted);
+      line-height: 1.65;
+    }
+    .step-desc b { color: var(--text); }
+
+    .phone-wrap {
+      grid-column: 1 / -1;
+      padding: 0 18px 18px 62px;
+    }
+    .phone {
+      background: #111;
+      border-radius: 20px;
+      padding: 10px;
+      max-width: 260px;
+      box-shadow: 0 4px 16px rgba(0,0,0,.18);
+    }
+    .phone-screen {
+      background: #fff;
+      border-radius: 12px;
+      overflow: hidden;
+      font-size: 11px;
+      line-height: 1.4;
+      color: #111;
+    }
+    .phone-bar {
+      background: var(--accent);
+      color: #fff;
+      font-size: 10px;
+      font-weight: 700;
+      padding: 6px 10px;
+      letter-spacing: .03em;
+    }
+    .phone-content { padding: 10px; }
+    .phone-field {
+      border: 1.2px solid #d0d0d0;
+      border-radius: 6px;
+      padding: 7px 9px;
+      margin-bottom: 7px;
+      font-size: 11px;
+      color: #555;
+      background: #fafafa;
+      display: flex; align-items: center; gap: 5px;
+    }
+    .phone-field.active {
+      border-color: var(--accent);
+      background: #f0f9f5;
+      color: #111;
+    }
+    .phone-field .field-label {
+      font-size: 9px; color: #888;
+      display: block; margin-bottom: 2px;
+    }
+    .phone-btn {
+      background: var(--accent);
+      color: #fff;
+      text-align: center;
+      border-radius: 7px;
+      padding: 8px;
+      font-size: 11px;
+      font-weight: 700;
+      margin-top: 4px;
+    }
+    .phone-btn.secondary {
+      background: var(--accent-light);
+      color: var(--accent);
+    }
+    .phone-tabs {
+      display: flex;
+      border-bottom: 1.5px solid #e8e8e8;
+      margin-bottom: 8px;
+    }
+    .phone-tab {
+      flex: 1;
+      text-align: center;
+      padding: 6px 4px;
+      font-size: 10px;
+      color: #999;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -1.5px;
+    }
+    .phone-tab.active {
+      color: var(--accent);
+      border-bottom-color: var(--accent);
+      font-weight: 700;
+    }
+    .phone-item {
+      background: #f5f5f5;
+      border-radius: 6px;
+      padding: 7px 9px;
+      margin-bottom: 6px;
+      font-size: 10px;
+    }
+    .phone-item b { display: block; font-size: 11px; margin-bottom: 2px; }
+    .tap-hint {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background: #FFE0B2;
+      color: #6D3200;
+      font-size: 9px;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 4px;
+      margin-top: 4px;
+    }
+
+    .notice {
+      background: var(--warn-bg);
+      border-left: 4px solid var(--warn-border);
+      border-radius: 0 10px 10px 0;
+      padding: 16px 18px;
+      margin: 4px 0;
+    }
+    .notice-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--warn-text);
+      letter-spacing: .05em;
+      margin-bottom: 8px;
+      display: flex; align-items: center; gap: 6px;
+    }
+    .notice ul {
+      list-style: none;
+      display: flex; flex-direction: column; gap: 6px;
+    }
+    .notice li {
+      font-size: 14px;
+      color: var(--warn-text);
+      padding-left: 18px;
+      position: relative;
+    }
+    .notice li::before {
+      content: '\25B8';
+      position: absolute; left: 0;
+      color: var(--warn-border);
+      font-size: 12px;
+      top: 1px;
+    }
+
+    .rule-box {
+      background: var(--accent-light);
+      border-radius: 12px;
+      padding: 18px 20px;
+      margin: 20px 0;
+    }
+    .rule-box-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--accent);
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+      display: flex; align-items: center; gap: 6px;
+    }
+    .rule-box ul {
+      list-style: none;
+      display: flex; flex-direction: column; gap: 8px;
+    }
+    .rule-box li {
+      font-size: 15px;
+      color: var(--text);
+      padding-left: 20px;
+      position: relative;
+    }
+    .rule-box li::before {
+      content: '\2713';
+      position: absolute; left: 0;
+      color: var(--accent);
+      font-weight: 700;
+    }
+
+    .tip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--accent-light);
+      color: var(--tag-text);
+      font-size: 13px;
+      font-weight: 600;
+      padding: 5px 12px;
+      border-radius: 20px;
+      margin-top: 10px;
+    }
+
+    .intro-card {
+      background: var(--surface);
+      border-radius: 14px;
+      padding: 22px 24px;
+      margin: 24px 0 36px;
+      box-shadow: var(--shadow);
+      border-left: 5px solid var(--accent);
+    }
+    .intro-card p {
+      font-size: 15px;
+      color: var(--text-muted);
+      line-height: 1.8;
+    }
+    .intro-card p + p { margin-top: 10px; }
+    .intro-card strong { color: var(--text); }
+
+    .scope {
+      display: flex; flex-wrap: wrap; gap: 8px;
+      margin-top: 16px;
+    }
+    .scope-chip {
+      display: flex; align-items: center; gap: 6px;
+      background: var(--accent);
+      color: #fff;
+      font-size: 13px;
+      font-weight: 700;
+      padding: 6px 14px;
+      border-radius: 20px;
+    }
+
+    .site-footer {
+      background: var(--text);
+      color: #fff;
+      padding: 28px 24px;
+      text-align: center;
+      font-size: 13px;
+    }
+    .site-footer p { opacity: .6; line-height: 1.9; }
+    .site-footer strong { opacity: 1; color: #fff; }
+
+    .url-block {
+      background: #1A2F28;
+      color: #80F0C0;
+      font-family: "SF Mono", "Fira Code", "Consolas", monospace;
+      font-size: 14px;
+      padding: 14px 18px;
+      border-radius: 10px;
+      margin: 12px 0;
+      word-break: break-all;
+      letter-spacing: .03em;
+    }
+
+    @media (max-width: 500px) {
+      .step-num-col { padding-top: 16px; }
+      .step-body { padding: 14px 14px 14px 0; }
+      .phone-wrap { padding-left: 16px; }
+      .site-header { padding: 24px 16px 20px; }
+    }
+  </style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="container">
+    <p class="eyebrow">Self Cafe Partner Portal</p>
+    <h1>パートナーポータル<br>操作ガイド</h1>
+    <p class="subtitle">発注依頼・忘れ物の登録 — 基本操作マニュアル</p>
+  </div>
+</header>
+
+<div class="container">
+
+  <div class="intro-card">
+    <p>このガイドでは、パートナーポータルを使って<strong>発注依頼の送信</strong>と<strong>忘れ物の登録</strong>を行う手順を説明します。</p>
+    <p>スマートフォン（iPhone・Android）から操作できます。順番通りに進めれば、はじめての方でも迷わず使えます。</p>
+    <div class="scope">
+      <span class="scope-chip">📦 発注依頼</span>
+      <span class="scope-chip">🔑 忘れ物</span>
+    </div>
+  </div>
+
+  <nav class="toc" aria-label="目次">
+    <p class="toc-title">目次</p>
+    <ol>
+      <li><a href="#login"><span class="toc-num">1</span>ポータルを開く・ログイン</a></li>
+      <li><a href="#order"><span class="toc-num">2</span>発注依頼の送り方・取り消し方</a></li>
+      <li><a href="#lostitem"><span class="toc-num">3</span>忘れ物の登録方法</a></li>
+      <li><a href="#tips"><span class="toc-num">4</span>困ったときのポイント</a></li>
+    </ol>
+  </nav>
+
+  <!-- Section 1: Login -->
+  <section class="section" id="login">
+    <div class="section-header">
+      <div class="section-icon">🔐</div>
+      <h2>ポータルを開く・ログイン<small>はじめに必ず行う手順</small></h2>
+    </div>
+
+    <div class="steps">
+
+      <article class="step">
+        <div class="step-num-col"><span class="step-num">1</span></div>
+        <div class="step-body">
+          <p class="step-action">スマートフォンでポータルのURLを開く</p>
+          <p class="step-desc">SafariまたはChromeを起動し、下のアドレスを入力してください。</p>
+        </div>
+        <div class="phone-wrap">
+          <div class="url-block">selfcafe.github.io/internal-web-system/</div>
+          <p class="tip">📌 ブックマーク（お気に入り）に保存しておくと便利です</p>
+        </div>
+      </article>
+
+      <article class="step">
+        <div class="step-num-col"><span class="step-num">2</span></div>
+        <div class="step-body">
+          <p class="step-action">パスワードを入力して「ログイン」を押す</p>
+          <p class="step-desc">担当者から伝えられた<b>店舗ごとのパスワード</b>を入力し、<b>「ログイン」ボタン</b>をタップします。</p>
+        </div>
+        <div class="phone-wrap">
+          <div class="phone">
+            <div class="phone-screen">
+              <div class="phone-bar">Self Cafe Partner Portal</div>
+              <div class="phone-content">
+                <div class="phone-field active" style="flex-direction:column; align-items:flex-start;">
+                  <span class="field-label">パスワード</span>
+                  <span>●●●●●●</span>
+                </div>
+                <div class="phone-btn">ログイン</div>
+                <span class="tap-hint" style="margin-top:6px;">👆 入力したら押す</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </article>
+
+    </div>
+
+    <div class="notice" style="margin-top:20px;">
+      <p class="notice-title">⚠ ログインできない場合</p>
+      <ul>
+        <li>パスワードは<b>半角</b>で入力してください（全角・日本語入力は不可）</li>
+        <li>前回ログインしたパスワードが自動入力される場合があります。違う場合は一度消して入力し直してください</li>
+        <li>解決しない場合は担当スタッフにお問い合わせください</li>
+      </ul>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <!-- Section 2: Order -->
+  <section class="section" id="order">
+    <div class="section-header">
+      <div class="section-icon">📦</div>
+      <h2>発注依頼の送り方<small>商品の補充を依頼する</small></h2>
+    </div>
+
+    <div class="rule-box">
+      <p class="rule-box-title">📋 発注のルール（必ずご確認ください）</p>
+      <ul>
+        <li>1ケース以上の商品 ＋ 他の商品を組み合わせてご依頼ください</li>
+        <li>納品は発注日から <b>土日祝日を除く3営業日以内</b> が目安です</li>
+        <li>緊急の場合は担当スタッフへ直接ご連絡ください</li>
+      </ul>
+    </div>
+
+    <div class="steps">
+
+      <article class="step">
+        <div class="step-num-col"><span class="step-num">1</span></div>
+        <div class="step-body">
+          <p class="step-action">「発注」タブをタップする</p>
+          <p class="step-desc">ログイン後、画面上部のタブから<b>「発注」</b>を選択します。</p>
+        </div>
+        <div class="phone-wrap">
+          <div class="phone">
+            <div class="phone-screen">
+              <div class="phone-bar">Self Cafe Partner Portal</div>
+              <div class="phone-content">
+                <div class="phone-tabs">
+                  <div class="phone-tab active">発注</div>
+                  <div class="phone-tab">忘れ物</div>
+                  <div class="phone-tab">棚卸表</div>
+                  <div class="phone-tab">その他</div>
+                </div>
+                <span class="tap-hint">👆 「発注」をタップ</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <article class="step">
+        <div class="step-num-col"><span class="step-num">2</span></div>
+        <div class="step-body">
+          <p class="step-action">商品名と数量を入力する</p>
+          <p class="step-desc">発注タブを開くと、入力欄が<b>1行自動的に表示</b>されます。そのまま<b>商品名</b>と<b>数量</b>を入力してください。同じ発注で複数商品まとめたい場合は、「＋ 商品を追加」で行を増やせます。</p>
+        </div>
+        <div class="phone-wrap">
+          <div class="phone">
+            <div class="phone-screen">
+              <div class="phone-bar">発注</div>
+              <div class="phone-content">
+                <div class="phone-field active" style="flex-direction:column; align-items:flex-start;">
+                  <span class="field-label">商品名</span>
+                  <span>ブレンドコーヒー豆</span>
+                </div>
+                <div class="phone-field" style="flex-direction:column; align-items:flex-start;">
+                  <span class="field-label">数量</span>
+                  <span>2ケース</span>
+                </div>
+                <div class="phone-btn secondary" style="font-size:10px; margin-bottom:4px;">＋ 商品を追加</div>
+                <span class="tap-hint">👆 同じ発注に商品を追加する場合</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <article class="step">
+        <div class="step-num-col"><span class="step-num">3</span></div>
+        <div class="step-body">
+          <p class="step-action">「依頼する →」ボタンを押す</p>
+          <p class="step-desc">入力内容を確認してから<b>「依頼する →」ボタン</b>をタップします。送信後、担当者にLINE WORKSで通知が届きます。</p>
+        </div>
+        <div class="phone-wrap">
+          <div class="phone">
+            <div class="phone-screen">
+              <div class="phone-bar">発注</div>
+              <div class="phone-content">
+                <div class="phone-item"><b>ブレンドコーヒー豆</b> 2ケース</div>
+                <div class="phone-btn" style="margin-top:6px;">依頼する →</div>
+                <span class="tap-hint" style="margin-top:6px;">👆 確認したら押す</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </article>
+
+    </div>
+
+    <div class="notice" style="margin-top:20px;">
+      <p class="notice-title">✅ 送信完了のサイン</p>
+      <ul>
+        <li>画面に <b>「✓ 依頼済み」</b> と表示されれば送信完了です</li>
+        <li>担当スタッフ側にはすぐ通知が届くので、再送は不要です</li>
+      </ul>
+    </div>
+
+    <div class="rule-box" style="margin-top:24px;">
+      <p class="rule-box-title">➕ 2件目以降の発注を追加したい場合</p>
+      <ul>
+        <li>「依頼する →」を押した後に画面下の<b>「発注依頼を追加」ボタン</b>が表示されます</li>
+        <li>タップすると新しい発注グループの入力欄が追加されます</li>
+        <li>ルール通り、1件ごとに 1ケース以上を含めて依頼してください</li>
+      </ul>
+    </div>
+
+    <hr class="divider" style="margin:32px 0;">
+
+    <div class="section-header" style="margin-bottom:16px;">
+      <div class="section-icon" style="background:#dc2626;">🔙</div>
+      <h2 style="font-size:18px;">発注依頼を取り消すには<small>スタッフが手配する前であれば取り消せます</small></h2>
+    </div>
+
+    <div class="steps">
+
+      <article class="step">
+        <div class="step-num-col"><span class="step-num">1</span></div>
+        <div class="step-body">
+          <p class="step-action">「✓ 依頼済み」の表示を確認する</p>
+          <p class="step-desc">送信した依頼の下に <b>「✓ 依頼済み」</b>と表示されます。その横に <b>「取り消す」ボタン（グレー）</b>が出ていれば、まだ取り消しが可能な状態です。</p>
+        </div>
+        <div class="phone-wrap">
+          <div class="phone">
+            <div class="phone-screen">
+              <div class="phone-bar">発注</div>
+              <div class="phone-content">
+                <div class="phone-item" style="background:#f5fdf8; border:1.5px solid #22703d;">
+                  <b>ブレンドコーヒー豆</b> 2ケース
+                </div>
+                <div style="display:flex; align-items:center; gap:6px; padding:4px 0; flex-wrap:wrap;">
+                  <span style="color:#22703d; font-size:10px; font-weight:700;">✓ 依頼済み</span>
+                  <span style="background:#6b7280; color:#fff; font-size:9px; font-weight:700; padding:3px 8px; border-radius:5px;">取り消す</span>
+                </div>
+                <span class="tap-hint">👆 グレーの「取り消す」をタップ</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <article class="step">
+        <div class="step-num-col"><span class="step-num">2</span></div>
+        <div class="step-body">
+          <p class="step-action">「取り消す」をタップして確認する</p>
+          <p class="step-desc">確認ダイアログが出た場合は <b>「OK」</b> をタップしてください。入力欄が再び編集できる状態に戻ります。</p>
+        </div>
+      </article>
+
+    </div>
+
+    <div class="notice" style="margin-top:16px;">
+      <p class="notice-title">⚠ 取り消しができない場合</p>
+      <ul>
+        <li>「取り消す」の代わりに <b>「発注済みのため取り消し不可」</b> と表示されている場合は、すでにスタッフが手配を開始しています</li>
+        <li>その場合は担当スタッフへ直接ご連絡ください</li>
+      </ul>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <!-- Section 3: Lost item -->
+  <section class="section" id="lostitem">
+    <div class="section-header">
+      <div class="section-icon">🔑</div>
+      <h2>忘れ物の登録方法<small>店舗で見つけた忘れ物を記録する</small></h2>
+    </div>
+
+    <div class="rule-box">
+      <p class="rule-box-title">📋 忘れ物の取り扱いルール</p>
+      <ul>
+        <li>財布・カード・スマートフォンなど<b>貴重品は最寄りの警察署へ届ける</b></li>
+        <li>店内での保管は<b>発見から1カ月まで</b>。期限後は処分</li>
+        <li>登録は忘れ物を見つけたその日のうちに行ってください</li>
+      </ul>
+    </div>
+
+    <div class="steps">
+
+      <article class="step">
+        <div class="step-num-col"><span class="step-num">1</span></div>
+        <div class="step-body">
+          <p class="step-action">「忘れ物」タブをタップする</p>
+          <p class="step-desc">画面上部のタブから<b>「忘れ物」</b>を選択します。</p>
+        </div>
+        <div class="phone-wrap">
+          <div class="phone">
+            <div class="phone-screen">
+              <div class="phone-bar">Self Cafe Partner Portal</div>
+              <div class="phone-content">
+                <div class="phone-tabs">
+                  <div class="phone-tab">発注</div>
+                  <div class="phone-tab active">忘れ物</div>
+                  <div class="phone-tab">棚卸表</div>
+                  <div class="phone-tab">その他</div>
+                </div>
+                <span class="tap-hint">👆 「忘れ物」をタップ</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <article class="step">
+        <div class="step-num-col"><span class="step-num">2</span></div>
+        <div class="step-body">
+          <p class="step-action">発見日を入力する</p>
+          <p class="step-desc"><b>忘れ物を発見した日付</b>を入力します。カレンダーが表示されたら、発見した日をタップして選んでください。</p>
+        </div>
+        <div class="phone-wrap">
+          <div class="phone">
+            <div class="phone-screen">
+              <div class="phone-bar">忘れ物を登録</div>
+              <div class="phone-content">
+                <div class="phone-field active" style="flex-direction:column; align-items:flex-start;">
+                  <span class="field-label">発見日</span>
+                  <span>📅　2026年6月30日</span>
+                </div>
+                <span class="tap-hint">👆 カレンダーから日付を選ぶ</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <article class="step">
+        <div class="step-num-col"><span class="step-num">3</span></div>
+        <div class="step-body">
+          <p class="step-action">忘れ物の特徴を備考欄に書く</p>
+          <p class="step-desc"><b>色・素材・ブランド・大きさ</b>など、後から特定できる情報をできるだけ具体的に書いてください。</p>
+        </div>
+        <div class="phone-wrap">
+          <div class="phone">
+            <div class="phone-screen">
+              <div class="phone-bar">忘れ物を登録</div>
+              <div class="phone-content">
+                <div class="phone-field active" style="flex-direction:column; align-items:flex-start; min-height:48px;">
+                  <span class="field-label">備考（特徴）</span>
+                  <span>黒色の折りたたみ傘、<br>持ち手に赤いリボン</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <p class="tip" style="margin-top:10px;">📝 例：「紺色のトートバッグ、Aという文字の刺繍あり」</p>
+        </div>
+      </article>
+
+      <article class="step">
+        <div class="step-num-col"><span class="step-num">4</span></div>
+        <div class="step-body">
+          <p class="step-action">写真を撮って添付する</p>
+          <p class="step-desc"><b>「写真を追加」</b>をタップし、忘れ物の写真を撮影します。全体と特徴的な部分の2枚撮ると、持ち主の確認がスムーズです。</p>
+        </div>
+        <div class="phone-wrap">
+          <div class="phone">
+            <div class="phone-screen">
+              <div class="phone-bar">忘れ物を登録</div>
+              <div class="phone-content">
+                <div class="phone-btn secondary" style="display:flex; align-items:center; justify-content:center; gap:5px;">
+                  📷 写真を追加
+                </div>
+                <div style="background:#e8e8e8; border-radius:6px; height:50px; margin-top:7px; display:flex; align-items:center; justify-content:center;">
+                  <span style="font-size:9px; color:#888;">🖼 添付された写真</span>
+                </div>
+                <span class="tap-hint" style="margin-top:6px;">👆 タップするとカメラが起動</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <article class="step">
+        <div class="step-num-col"><span class="step-num">5</span></div>
+        <div class="step-body">
+          <p class="step-action">「登録」ボタンを押して完了</p>
+          <p class="step-desc">入力内容を確認したら<b>「登録」ボタン</b>をタップします。登録した内容は管理者画面に届きます。</p>
+        </div>
+        <div class="phone-wrap">
+          <div class="phone">
+            <div class="phone-screen">
+              <div class="phone-bar">忘れ物を登録</div>
+              <div class="phone-content">
+                <div class="phone-item" style="font-size:9px; line-height:1.6;">
+                  <b>2026年6月30日</b>
+                  黒色の折りたたみ傘、持ち手に赤いリボン
+                </div>
+                <div class="phone-btn">登録する</div>
+                <span class="tap-hint" style="margin-top:6px;">👆 最後にここを押す</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </article>
+
+    </div>
+
+    <div class="notice" style="margin-top:20px;">
+      <p class="notice-title">⚠ 貴重品は必ず警察へ</p>
+      <ul>
+        <li>財布・現金・クレジットカードは遺失物法の対象です</li>
+        <li>最寄りの警察署または交番に届け出てください</li>
+        <li>届け出た後でも、ポータルへの登録は行ってください</li>
+      </ul>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <!-- Section 4: Tips -->
+  <section class="section" id="tips">
+    <div class="section-header">
+      <div class="section-icon">💡</div>
+      <h2>困ったときのポイント<small>よくある疑問と対処法</small></h2>
+    </div>
+
+    <div class="steps">
+
+      <article class="step">
+        <div class="step-num-col"><span class="step-num">Q</span></div>
+        <div class="step-body">
+          <p class="step-action">ページが白いまま動かない</p>
+          <p class="step-desc">ブラウザの<b>更新ボタン（↺）</b>を押してください。それでも動かない場合は、Wi-Fiや通信状況を確認してから再度アクセスしてください。</p>
+        </div>
+      </article>
+
+      <article class="step">
+        <div class="step-num-col"><span class="step-num">Q</span></div>
+        <div class="step-body">
+          <p class="step-action">「ログイン」を押しても進まない</p>
+          <p class="step-desc">パスワードは<b>半角英数字</b>で入力してください。日本語入力（全角）になっていないかを確認し、キーボードの「ABC」「English」モードに切り替えてから入力してください。</p>
+        </div>
+      </article>
+
+      <article class="step">
+        <div class="step-num-col"><span class="step-num">Q</span></div>
+        <div class="step-body">
+          <p class="step-action">発注を送ったか分からなくなった</p>
+          <p class="step-desc">「発注」タブを開いて、依頼した内容に <b>「✓ 依頼済み」</b> と表示されていれば送信済みです。二重送信を防ぐため、必ず確認してから再送してください。</p>
+        </div>
+      </article>
+
+      <article class="step">
+        <div class="step-num-col"><span class="step-num">Q</span></div>
+        <div class="step-body">
+          <p class="step-action">写真が添付できない</p>
+          <p class="step-desc">スマートフォンの<b>設定 → Safari（またはChrome）→ カメラ</b>のアクセスを「許可」に変更してください。許可後、ページを再度開いてお試しください。</p>
+        </div>
+      </article>
+
+    </div>
+  </section>
+
+</div>
+
+<footer class="site-footer">
+  <div class="container">
+    <p><strong>Self Cafe パートナーポータル</strong><br>
+    操作に関するご不明点は担当スタッフまでご連絡ください。<br>
+    発行：2026年6月</p>
+  </div>
+</footer>
+
+</body>
+</html>
